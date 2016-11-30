@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using Bets.Domain;
 using Bets.Selenium.Pages;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;

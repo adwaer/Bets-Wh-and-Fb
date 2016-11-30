@@ -36,6 +36,28 @@ namespace Bats.Desktop
                 width = Width;
             }
 
+            var columnWidths = ConfigurationManager.AppSettings["columnWidths"];
+            if (!string.IsNullOrEmpty(columnWidths))
+            {
+                try
+                {
+                    var cw = columnWidths
+                        .Split(';')
+                        .Select(int.Parse)
+                        .ToArray();
+
+                    for (int i = 0; i < listView.Columns.Count && i < cw.Length; i++)
+                    {
+                        var columnHeader = listView.Columns[i];
+                        columnHeader.Width = cw[i];
+                    }
+                }
+                catch
+                {
+                    MessageBox.Show("Невозможно установить ширину колонок");
+                }
+            }
+
             Height = height;
             Width = width;
 
@@ -66,6 +88,12 @@ namespace Bats.Desktop
             config.AppSettings.Settings.Add("formHeight", Height.ToString());
             config.AppSettings.Settings.Remove("formWidth");
             config.AppSettings.Settings.Add("formWidth", Width.ToString());
+
+            var widths = string.Join(";", listView.Columns.Cast<ColumnHeader>()
+                .Select(c => c.Width));
+            config.AppSettings.Settings.Remove("columnWidths");
+            config.AppSettings.Settings.Add("columnWidths", widths);
+
             config.Save(ConfigurationSaveMode.Modified);
 
             _formUpdateActions.BetsNavigator.Dispose();

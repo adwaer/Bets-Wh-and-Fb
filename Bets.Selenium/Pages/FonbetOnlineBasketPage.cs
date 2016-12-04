@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Bets.Domain.PageElements;
 using Bets.Services;
@@ -7,55 +10,47 @@ using OpenQA.Selenium;
 
 namespace Bets.Selenium.Pages
 {
-    public class FonbetOnlineBasketPage
+    public sealed class FonbetOnlineBasketPage : BasketPage, IDisposable
     {
         public readonly IWebDriver WebDriver;
         public readonly IJavaScriptExecutor Js;
 
-        public FonbetOnlineBasketPage(IWebDriver webDriver, string url)
+        public FonbetOnlineBasketPage()
         {
-            WebDriver = webDriver;
+            WebDriver = GetNewDriver(ConfigurationManager.AppSettings["fonbetDriver"]);
+            Setup(WebDriver, ConfigurationManager.AppSettings["fonbetUrl"]);
             Js = (IJavaScriptExecutor)WebDriver;
-            Setup(url);
         }
 
-        private void Setup(string url)
-        {
-            WebDriver
-                .Navigate()
-                .GoToUrl(url);
-        }
-
-        public IEnumerable<FonbetRow> GetFonbetRows()
+        public override IRow[] GetRows(StringBuilder errBuilder)
         {
             var webElements = WebDriver.FindElement(By.Id("lineContainer"))
-                .FindElements(By.ClassName("trEvent"));
+                .FindElements(By.ClassName("trEvent"))
+                .Where(webElement => webElement.GetAttribute("style").Contains("display: table-row;"));
 
             var fonbetRows = new List<FonbetRow>();
             Parallel.ForEach(webElements, webElement =>
             {
                 try
                 {
-                    if (webElement.GetAttribute("style") == "display: none")
-                    {
-                        return;
-                    }
-
                     string[] teams;
                     try
                     {
                         teams = webElement.FindElement(By.ClassName("event"))
-                            .Text.Split(new[] { '—' }, StringSplitOptions.RemoveEmptyEntries);
+                            .Text.Split(new[] { " - ", " − ", " — " }, StringSplitOptions.RemoveEmptyEntries);
                     }
                     catch (NoSuchElementException)
                     {
                         return;
                     }
 
-                    fonbetRows.Add(new FonbetRow(webElement.FindElements(By.ClassName("eventCellParam")))
+                    var readOnlyCollection = webElement.FindElements(By.ClassName("eventCellParam"));
+                    fonbetRows.Add(new FonbetRow
                     {
                         Team1 = TeamsHolder.Instance.GetTeam(teams[0]),
-                        Team2 = TeamsHolder.Instance.GetTeam(teams[1])
+                        Team2 = TeamsHolder.Instance.GetTeam(teams[1]),
+                        TotalElement = readOnlyCollection[2],
+                        HandicapElement = readOnlyCollection[1]
                     });
                 }
                 catch
@@ -64,8 +59,12 @@ namespace Bets.Selenium.Pages
                 }
             });
 
-            return fonbetRows;
+            return fonbetRows.ToArray();
         }
-        
+
+        public void Dispose()
+        {
+            WebDriver.Dispose();
+        }
     }
 }

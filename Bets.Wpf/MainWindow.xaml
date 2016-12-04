@@ -1,0 +1,76 @@
+﻿<Window x:Class="Bets.Wpf.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Bets.Wpf"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="350" Width="704.45"
+        Loaded="MainWindow_Loaded">
+    <Grid>
+        <xctk:BusyIndicator x:Name="BusyIndicator">
+            <xctk:BusyIndicator.BusyContentTemplate>
+                <DataTemplate>
+                    <StackPanel Margin="4">
+                        <TextBlock Text="{Binding Path=FormActions.BusyText, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" />
+                    </StackPanel>
+                </DataTemplate>
+            </xctk:BusyIndicator.BusyContentTemplate>
+            <ListView Name="ResultListView" Width="{Binding Path=ViewportWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ScrollViewer}}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Width="160" HorizontalAlignment="Left" VerticalAlignment="Top" />
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Border BorderBrush="CornflowerBlue" BorderThickness="1">
+                            <StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Top">
+                                <StackPanel>
+                                    <Border Height="20" VerticalAlignment="Top">
+                                        <TextBox Text="zzz" TextAlignment="Center" BorderBrush="CornflowerBlue" Background="CornflowerBlue">
+                                            <TextBox.Foreground>
+                                                <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.HighlightTextColorKey}}"/>
+                                            </TextBox.Foreground>
+                                        </TextBox>
+                                    </Border>
+                                </StackPanel>
+                                <StackPanel>
+                                    <Grid Margin="5,0,0,5">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition MinHeight="20"></RowDefinition>
+                                            <RowDefinition></RowDefinition>
+                                            <RowDefinition></RowDefinition>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="20"></ColumnDefinition>
+                                            <ColumnDefinition Width="70"></ColumnDefinition>
+                                            <ColumnDefinition Width="70"></ColumnDefinition>
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Text="" Grid.Row="0" Grid.Column="0"></TextBlock>
+                                        <TextBlock Text="Фонбет" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center"></TextBlock>
+                                        <TextBlock Text="Винлайн" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center"></TextBlock>
+
+                                        <TextBlock Text="T" Grid.Column="0" Grid.Row="1"></TextBlock>
+                                        <TextBlock Text="Ф" Grid.Column="0" Grid.Row="2"></TextBlock>
+
+                                        <TextBlock Text="123" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Center"></TextBlock>
+                                        <TextBlock Text="231" Grid.Column="2" Grid.Row="1" HorizontalAlignment="Center"></TextBlock>
+
+                                        <TextBlock Text="4" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Center"></TextBlock>
+                                        <TextBlock Text="5" Grid.Column="2" Grid.Row="2" HorizontalAlignment="Center"></TextBlock>
+                                    </Grid>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </xctk:BusyIndicator>
+        <StackPanel>
+            
+        </StackPanel>
+    </Grid>
+</Window>

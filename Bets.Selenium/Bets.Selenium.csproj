@@ -51,6 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BetsNavigator.cs" />
+    <Compile Include="Pages\BasketPage.cs" />
     <Compile Include="Pages\WinlineOnlineBasketPage.cs" />
     <Compile Include="Pages\FonbetOnlineBasketPage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

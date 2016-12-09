@@ -47,8 +47,8 @@ namespace Bets.Selenium.Pages
                     var readOnlyCollection = webElement.FindElements(By.ClassName("eventCellParam"));
                     fonbetRows.Add(new FonbetRow
                     {
-                        Team1 = TeamsHolder.Instance.GetTeam(teams[0]),
-                        Team2 = TeamsHolder.Instance.GetTeam(teams[1]),
+                        Team1 = TeamsHolder.Instance.GetTeam(teams[0].Replace(" ", "")),
+                        Team2 = TeamsHolder.Instance.GetTeam(teams[1].Replace(" ", "")),
                         TotalElement = readOnlyCollection[2],
                         HandicapElement = readOnlyCollection[1]
                     });

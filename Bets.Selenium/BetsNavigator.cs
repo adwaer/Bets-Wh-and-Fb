@@ -47,37 +47,37 @@ namespace Bets.Selenium
             Task.WaitAll(task, run);
 
             var results = new List<ResultViewModel>();
-            foreach (var fonbetGame in fbRows.OrderBy(r => r.Team1.ToString()))
+            foreach (var wlGame in winlineRows.OrderBy(r => r.Team1.ToString()))
             {
-                var gamesWl = winlineRows
-                    .Where(r => r.Team1.Equals(fonbetGame.Team1) || r.Team2.Equals(fonbetGame.Team2))
+                var gamesFb = fbRows
+                    .Where(r => r.Team1.Equals(wlGame.Team1) || r.Team2.Equals(wlGame.Team2))
                     .ToArray();
 
-                if (gamesWl.Length > 1)
+                if (gamesFb.Length > 1)
                 {
                     errBuilder.Append("Дубли: ");
-                    FillTeamsNames(fonbetGame, errBuilder);
+                    FillTeamsNames(wlGame, errBuilder);
                     errBuilder.AppendLine();
 
                     continue;
                 }
-                if (!gamesWl.Any())
+                if (!gamesFb.Any())
                 {
                     errBuilder.Append("Не найдено: ");
-                    FillTeamsNames(fonbetGame, errBuilder);
+                    FillTeamsNames(wlGame, errBuilder);
                     errBuilder.AppendLine();
 
                     continue;
                 }
 
-                var gameWl = gamesWl.Single();
+                var gameFb = gamesFb.Single();
 
                 results.Add(new ResultViewModel
                 {
-                    Team1 = gameWl.Team1,
-                    Team2 = gameWl.Team2,
-                    Fonbet = new StatViewModel(fonbetGame),
-                    Winline = new StatViewModel(gameWl)
+                    Team1 = gameFb.Team1,
+                    Team2 = gameFb.Team2,
+                    Fonbet = new StatViewModel(gameFb),
+                    Winline = new StatViewModel(wlGame)
                 });
             }
 

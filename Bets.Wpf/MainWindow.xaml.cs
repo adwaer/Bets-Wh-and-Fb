@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
 using Bets.Domain;
 using Bets.Selenium;
-using Xceed.Wpf.Toolkit;
+using MessageBox = Xceed.Wpf.Toolkit.MessageBox;
 
 namespace Bets.Wpf
 {
@@ -15,67 +16,74 @@ namespace Bets.Wpf
     /// </summary>
     public partial class MainWindow
     {
-        public readonly ObservableCollection<ResultViewModel> ResultViewModels;
         public FormActions FormActions { get; set; }
 
         public MainWindow()
         {
-            DataContext = this;
+            FormActions = new FormActions();
             InitializeComponent();
-
-            ResultViewModels = new ObservableCollection<ResultViewModel>();
-            ResultListView.ItemsSource = ResultViewModels;
-
-            //FormActions = new FormActions();
         }
 
-        private void MainWindow_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        public void Fetch(object sender, System.Windows.RoutedEventArgs e)
         {
-            Fetch();
-        }
-        
-        private void Fetch()
-        {
-            ResultViewModels.Add(new ResultViewModel());
-            ResultViewModels.Add(new ResultViewModel());
-            ResultViewModels.Add(new ResultViewModel());
-            ResultViewModels.Add(new ResultViewModel());
-            ResultViewModels.Add(new ResultViewModel());
-            ResultViewModels.Add(new ResultViewModel());
-            ResultViewModels.Add(new ResultViewModel());
-            ResultViewModels.Add(new ResultViewModel());
-
-            return;
-
-
-            if (BusyIndicator.IsBusy)
+            if (FormActions.IsBusy)
             {
                 return;
             }
 
             FormActions.RestartTimer();
-            BusyIndicator.IsBusy = true;
+            BusyIndicator.IsBusy = FormActions.IsBusy = true;
 
             Task.Run(() =>
             {
                 var errorBuilder = new StringBuilder();
-                var results = BetsNavigator.Instance.GetResults(errorBuilder);
+                List<ResultViewModel> results = null;
+                try
+                {
+                    results = BetsNavigator.Instance.GetResults(errorBuilder);
+                }
+                catch (Exception ex)
+                {
+                    errorBuilder.AppendLine(ex.ToString());
+                }
 
                 Dispatcher.BeginInvoke(new Action(() =>
                 {
-                    ResultViewModels.Clear();
-                    foreach (var result in results)
+                    FormActions.ResultViewModels.Clear();
+                    if (results != null)
                     {
-                        ResultViewModels.Add(result);
+                        foreach (var result in results)
+                        {
+                            FormActions.ResultViewModels.Add(result);
+                        }
                     }
 
                     if (errorBuilder.Length > 0)
                     {
                         MessageBox.Show(this, errorBuilder.ToString());
                     }
-                    BusyIndicator.IsBusy = false;
+                    BusyIndicator.IsBusy = FormActions.IsBusy = false;
                 }));
             });
         }
+
+        private void RemoveBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            var button = (Button)sender;
+            var teamViewModel = (TeamViewModel)button.Tag;
+
+            var resultViewModel = FormActions.ResultViewModels.First(r => Equals(r.Team1, teamViewModel));
+            FormActions.ResultViewModels.Remove(resultViewModel);
+        }
+
+        private void UpdateBase_OnClick(object sender, RoutedEventArgs e)
+        {
+            var button = (Button)sender;
+            var teamViewModel = (TeamViewModel)button.Tag;
+
+            var resultViewModel = FormActions.ResultViewModels.First(r => Equals(r.Team1, teamViewModel));
+            FormActions.UpdateHandicapWl(resultViewModel);
+        }
     }
+
 }

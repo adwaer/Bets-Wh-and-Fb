@@ -47,9 +47,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FetchTransactions.cs" />
+    <Compile Include="ObservableObject.cs" />
     <Compile Include="PageElements\IRow.cs" />
     <Compile Include="PageElements\WinlineRow.cs" />
     <Compile Include="PageElements\FonbetRow.cs" />
+    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="ResultViewModel.cs" />
     <Compile Include="TeamGameViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

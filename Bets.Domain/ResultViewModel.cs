@@ -7,5 +7,12 @@
 
         public StatViewModel Winline { get; set; }
         public StatViewModel Fonbet { get; set; }
+
+        public void Update()
+        {
+            Winline.Update();
+            Fonbet.Update();
+        }
+        
     }
 }

@@ -5,72 +5,191 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Bets.Wpf"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
+        xmlns:controls="clr-namespace:Bets.Wpf.Controls"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="704.45"
-        Loaded="MainWindow_Loaded">
+        Title="Онлайн ставки" Height="350" Width="704.45"
+        Loaded="Fetch"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}" Icon="Resources/Humanoid.png">
+    
+    <Window.Resources>
+        <controls:ValueToEqualsParameterConverter x:Key="ValueToEqualsParameterConverter"></controls:ValueToEqualsParameterConverter>
+    </Window.Resources>
+
     <Grid>
-        <xctk:BusyIndicator x:Name="BusyIndicator">
-            <xctk:BusyIndicator.BusyContentTemplate>
-                <DataTemplate>
-                    <StackPanel Margin="4">
-                        <TextBlock Text="{Binding Path=FormActions.BusyText, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" />
-                    </StackPanel>
-                </DataTemplate>
-            </xctk:BusyIndicator.BusyContentTemplate>
-            <ListView Name="ResultListView" Width="{Binding Path=ViewportWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ScrollViewer}}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                <ListView.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <DockPanel Height="Auto" LastChildFill="False" VerticalAlignment="Top" />
-                    </ItemsPanelTemplate>
-                </ListView.ItemsPanel>
-                <ListView.ItemTemplate>
+        <DockPanel>
+            <Menu x:Name="Menu" VerticalAlignment="Top" DockPanel.Dock="Top">
+                <MenuItem Click="Fetch" Header="_Файл">
+                    <MenuItem Header="_Обновить">
+                        <MenuItem.Icon>
+                            <Image Source="Resources/Refresh.png" Height="16" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </MenuItem>
+            </Menu>
+            <xctk:BusyIndicator x:Name="BusyIndicator">
+                <xctk:BusyIndicator.BusyContentTemplate>
                     <DataTemplate>
-                        <Border BorderBrush="CornflowerBlue" BorderThickness="1">
-                            <StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Top">
-                                <StackPanel>
-                                    <Border Height="20" VerticalAlignment="Top">
-                                        <TextBox Text="zzz" TextAlignment="Center" BorderBrush="CornflowerBlue" Background="CornflowerBlue">
-                                            <TextBox.Foreground>
-                                                <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.HighlightTextColorKey}}"/>
-                                            </TextBox.Foreground>
-                                        </TextBox>
-                                    </Border>
-                                </StackPanel>
-                                <StackPanel>
-                                    <Grid Margin="5,0,0,5">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition MinHeight="20"></RowDefinition>
-                                            <RowDefinition></RowDefinition>
-                                            <RowDefinition></RowDefinition>
-                                        </Grid.RowDefinitions>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="20"></ColumnDefinition>
-                                            <ColumnDefinition Width="70"></ColumnDefinition>
-                                            <ColumnDefinition Width="70"></ColumnDefinition>
-                                        </Grid.ColumnDefinitions>
-
-                                        <TextBlock Text="" Grid.Row="0" Grid.Column="0"></TextBlock>
-                                        <TextBlock Text="Фонбет" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center"></TextBlock>
-                                        <TextBlock Text="Винлайн" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center"></TextBlock>
-
-                                        <TextBlock Text="T" Grid.Column="0" Grid.Row="1"></TextBlock>
-                                        <TextBlock Text="Ф" Grid.Column="0" Grid.Row="2"></TextBlock>
-
-                                        <TextBlock Text="123" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Center"></TextBlock>
-                                        <TextBlock Text="231" Grid.Column="2" Grid.Row="1" HorizontalAlignment="Center"></TextBlock>
-
-                                        <TextBlock Text="4" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Center"></TextBlock>
-                                        <TextBlock Text="5" Grid.Column="2" Grid.Row="2" HorizontalAlignment="Center"></TextBlock>
-                                    </Grid>
-                                </StackPanel>
-                            </StackPanel>
-                        </Border>
+                        <StackPanel Margin="4">
+                            <TextBlock Text="{Binding Path=FormActions.Seconds, StringFormat=Выполнение запроса: {0} сек, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" />
+                        </StackPanel>
                     </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-        </xctk:BusyIndicator>
-        <StackPanel>
-            
-        </StackPanel>
+                </xctk:BusyIndicator.BusyContentTemplate>
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <ItemsControl Name="ResultsControl" ItemsSource="{Binding Path=FormActions.ResultViewModels}" Width="{Binding Path=ViewportWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ScrollViewer}}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="CornflowerBlue" BorderThickness="1" Margin="5" MaxWidth="150" MinWidth="150" CornerRadius="5">
+                                    <StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Top" MaxWidth="150" MinWidth="150">
+                                        <StackPanel>
+                                            <Border Height="20" VerticalAlignment="Top">
+                                                <TextBlock TextAlignment="Center" Background="CornflowerBlue" Padding="5,2" MaxWidth="150">
+                                                    <TextBlock.Text>
+                                                        <MultiBinding StringFormat="{}{0} vs {1}">
+                                                            <Binding Path="Team1" />
+                                                            <Binding Path="Team2" />
+                                                        </MultiBinding>
+                                                    </TextBlock.Text>
+                                                    <TextBlock.Foreground>
+                                                        <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.HighlightTextColorKey}}" />
+                                                    </TextBlock.Foreground>
+                                                    <TextBlock.ToolTip>
+                                                        <ToolTip>
+                                                            <TextBlock>
+                                                                <TextBlock.Text>
+                                                                    <MultiBinding StringFormat="{}{0} vs {1}">
+                                                                        <Binding Path="Team1" />
+                                                                        <Binding Path="Team2" />
+                                                                    </MultiBinding>
+                                                                </TextBlock.Text>
+                                                            </TextBlock>
+                                                        </ToolTip>
+                                                    </TextBlock.ToolTip>
+                                                </TextBlock>
+                                            </Border>
+                                        </StackPanel>
+                                        <StackPanel>
+                                            <Grid Margin="5,0,0,5">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition MinHeight="20"></RowDefinition>
+                                                    <RowDefinition></RowDefinition>
+                                                    <RowDefinition></RowDefinition>
+                                                </Grid.RowDefinitions>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="5*"></ColumnDefinition>
+                                                    <ColumnDefinition Width="5*"></ColumnDefinition>
+                                                </Grid.ColumnDefinitions>
+
+                                                <TextBlock Text="Фонбет" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" />
+                                                <TextBlock Text="Винлайн" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" />
+
+                                                <Border Grid.Column="0" Grid.Row="1" DataContext="{Binding Fonbet.Total}">
+                                                    <Button Content="{Binding Path=Value}" HorizontalAlignment="Center">
+                                                        <Button.Style>
+                                                            <Style>
+                                                                <Style.Setters>
+                                                                    <Setter Property="Button.BorderBrush" Value="CornflowerBlue"></Setter>
+                                                                    <Setter Property="Button.Margin" Value="2"></Setter>
+                                                                    <Setter Property="Button.Width" Value="65"></Setter>
+                                                                    <Setter Property="Button.Cursor" Value="Hand"></Setter>
+                                                                </Style.Setters>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Value="true" Binding="{Binding Path=OldValue, RelativeSource={RelativeSource Self}, Converter={StaticResource ResourceKey=ValueToEqualsParameterConverter}}">
+                                                                        <Setter Property="Control.Background" Value="Red" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Button.Style>
+                                                    </Button>
+                                                </Border>
+
+                                                <Border Grid.Column="1" Grid.Row="1" DataContext="{Binding Winline.Total}">
+                                                    <Button Content="{Binding Path=Value}" HorizontalAlignment="Center">
+                                                        <Button.Style>
+                                                            <Style>
+                                                                <Style.Setters>
+                                                                    <Setter Property="Button.BorderBrush" Value="CornflowerBlue"></Setter>
+                                                                    <Setter Property="Button.Margin" Value="2"></Setter>
+                                                                    <Setter Property="Button.Width" Value="65"></Setter>
+                                                                    <Setter Property="Button.Cursor" Value="Hand"></Setter>
+                                                                </Style.Setters>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Value="true" Binding="{Binding Path=OldValue, RelativeSource={RelativeSource Self}, Converter={StaticResource ResourceKey=ValueToEqualsParameterConverter}}">
+                                                                        <Setter Property="Control.Background" Value="Red" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Button.Style>
+                                                    </Button>
+                                                </Border>
+
+                                                <Border Grid.Column="0" Grid.Row="2" DataContext="{Binding Fonbet.Handicap}">
+                                                    <Button Content="{Binding Path=Value}" HorizontalAlignment="Center">
+                                                        <Button.Style>
+                                                            <Style>
+                                                                <Style.Setters>
+                                                                    <Setter Property="Button.BorderBrush" Value="CornflowerBlue"></Setter>
+                                                                    <Setter Property="Button.Margin" Value="2"></Setter>
+                                                                    <Setter Property="Button.Width" Value="65"></Setter>
+                                                                    <Setter Property="Button.Cursor" Value="Hand"></Setter>
+                                                                </Style.Setters>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Value="true" Binding="{Binding Path=OldValue, RelativeSource={RelativeSource Self}, Converter={StaticResource ResourceKey=ValueToEqualsParameterConverter}}">
+                                                                        <Setter Property="Control.Background" Value="Red" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Button.Style>
+                                                    </Button>
+                                                </Border>
+
+                                                <!--ContentControl Grid.Column="1" Grid.Row="2" Content="{Binding Winline.Handicap}">-->
+                                                <Border Grid.Column="1" Grid.Row="2" DataContext="{Binding Winline.Handicap}">
+                                                    <Button Content="{Binding Path=Value}" HorizontalAlignment="Center">
+                                                        <Button.Style>
+                                                            <Style>
+                                                                <Style.Setters>
+                                                                    <Setter Property="Button.BorderBrush" Value="CornflowerBlue"></Setter>
+                                                                    <Setter Property="Button.Margin" Value="2"></Setter>
+                                                                    <Setter Property="Button.Width" Value="65"></Setter>
+                                                                    <Setter Property="Button.Cursor" Value="Hand"></Setter>
+                                                                </Style.Setters>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Value="true" Binding="{Binding Path=OldValue, RelativeSource={RelativeSource Self}, Converter={StaticResource ResourceKey=ValueToEqualsParameterConverter}}">
+                                                                        <Setter Property="Control.Background" Value="Red" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Button.Style>
+                                                    </Button>
+                                                </Border>
+                                                <!--</ContentControl>-->
+                                            </Grid>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="5,0,0,0" IsManipulationEnabled="True">
+                                            <Button Background="Transparent" Width="25" Click="RemoveBtn_OnClick" Tag="{Binding Team1}">
+                                                <StackPanel>
+                                                    <Image Source="Resources/Delete.png" />
+                                                </StackPanel>
+                                            </Button>
+                                            <Button Background="Transparent" Width="25" Click="UpdateBase_OnClick" Tag="{Binding Team1}">
+                                                <StackPanel>
+                                                    <Image Source="Resources/Refresh.png" />
+                                                </StackPanel>
+                                            </Button>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </xctk:BusyIndicator>
+        </DockPanel>
     </Grid>
 </Window>

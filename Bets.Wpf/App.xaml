@@ -19,9 +19,7 @@
                 </DataTrigger>
             </Style.Triggers>
         </Style>
-
-        <Image x:Key="RemoveImage" Source="Resources/Delete.png" />
-
+        
         <Style TargetType="Button">
             <Style.Setters>
                 <Setter Property="Cursor" Value="Hand"></Setter>

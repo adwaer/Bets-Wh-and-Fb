@@ -109,64 +109,16 @@
                                                 </Border>
 
                                                 <Border Grid.Column="1" Grid.Row="1" DataContext="{Binding Winline.Total}">
-                                                    <Button Content="{Binding Path=Value}" HorizontalAlignment="Center">
-                                                        <Button.Style>
-                                                            <Style>
-                                                                <Style.Setters>
-                                                                    <Setter Property="Button.BorderBrush" Value="CornflowerBlue"></Setter>
-                                                                    <Setter Property="Button.Margin" Value="2"></Setter>
-                                                                    <Setter Property="Button.Width" Value="65"></Setter>
-                                                                    <Setter Property="Button.Cursor" Value="Hand"></Setter>
-                                                                </Style.Setters>
-                                                                <Style.Triggers>
-                                                                    <DataTrigger Value="true" Binding="{Binding Path=OldValue, RelativeSource={RelativeSource Self}, Converter={StaticResource ResourceKey=ValueToEqualsParameterConverter}}">
-                                                                        <Setter Property="Control.Background" Value="Red" />
-                                                                    </DataTrigger>
-                                                                </Style.Triggers>
-                                                            </Style>
-                                                        </Button.Style>
-                                                    </Button>
+                                                    <Button Content="{Binding Path=Value}" HorizontalAlignment="Center" Style="{StaticResource TextBlockBrushStyle}" />
                                                 </Border>
 
                                                 <Border Grid.Column="0" Grid.Row="2" DataContext="{Binding Fonbet.Handicap}">
-                                                    <Button Content="{Binding Path=Value}" HorizontalAlignment="Center">
-                                                        <Button.Style>
-                                                            <Style>
-                                                                <Style.Setters>
-                                                                    <Setter Property="Button.BorderBrush" Value="CornflowerBlue"></Setter>
-                                                                    <Setter Property="Button.Margin" Value="2"></Setter>
-                                                                    <Setter Property="Button.Width" Value="65"></Setter>
-                                                                    <Setter Property="Button.Cursor" Value="Hand"></Setter>
-                                                                </Style.Setters>
-                                                                <Style.Triggers>
-                                                                    <DataTrigger Value="true" Binding="{Binding Path=OldValue, RelativeSource={RelativeSource Self}, Converter={StaticResource ResourceKey=ValueToEqualsParameterConverter}}">
-                                                                        <Setter Property="Control.Background" Value="Red" />
-                                                                    </DataTrigger>
-                                                                </Style.Triggers>
-                                                            </Style>
-                                                        </Button.Style>
-                                                    </Button>
+                                                    <Button Content="{Binding Path=Value}" HorizontalAlignment="Center" Style="{StaticResource TextBlockBrushStyle}" />
                                                 </Border>
 
                                                 <!--ContentControl Grid.Column="1" Grid.Row="2" Content="{Binding Winline.Handicap}">-->
                                                 <Border Grid.Column="1" Grid.Row="2" DataContext="{Binding Winline.Handicap}">
-                                                    <Button Content="{Binding Path=Value}" HorizontalAlignment="Center">
-                                                        <Button.Style>
-                                                            <Style>
-                                                                <Style.Setters>
-                                                                    <Setter Property="Button.BorderBrush" Value="CornflowerBlue"></Setter>
-                                                                    <Setter Property="Button.Margin" Value="2"></Setter>
-                                                                    <Setter Property="Button.Width" Value="65"></Setter>
-                                                                    <Setter Property="Button.Cursor" Value="Hand"></Setter>
-                                                                </Style.Setters>
-                                                                <Style.Triggers>
-                                                                    <DataTrigger Value="true" Binding="{Binding Path=OldValue, RelativeSource={RelativeSource Self}, Converter={StaticResource ResourceKey=ValueToEqualsParameterConverter}}">
-                                                                        <Setter Property="Control.Background" Value="Red" />
-                                                                    </DataTrigger>
-                                                                </Style.Triggers>
-                                                            </Style>
-                                                        </Button.Style>
-                                                    </Button>
+                                                    <Button Content="{Binding Path=Value}" HorizontalAlignment="Center" Style="{StaticResource TextBlockBrushStyle}" />
                                                 </Border>
                                                 <!--</ContentControl>-->
                                             </Grid>

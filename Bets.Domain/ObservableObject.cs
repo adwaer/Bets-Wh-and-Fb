@@ -6,26 +6,26 @@ namespace Bets.Domain
 {
     public class ObservableObject<T> : INotifyPropertyChanged
     {
-        private T Val { get; set; }
+        private T _val;
         public T Value
         {
-            get { return Val; }
+            get { return _val; }
             set
             {
-                OldValue = Val;
 
-                Val = value;
+                IsOLd = value.Equals(_val);
+
+                _val = value;
                 OnPropertyChanged();
             }
         }
-
-        private T OldVal { get; set; }
-        public T OldValue
+        private bool _isOLd;
+        public bool IsOLd
         {
-            get { return OldVal; }
+            get { return _isOLd; }
             set
             {
-                OldVal = value;
+                _isOLd = value;
                 OnPropertyChanged();
             }
         }

@@ -12,11 +12,23 @@
                 <Setter Property="Margin" Value="2"></Setter>
                 <Setter Property="Width" Value="65"></Setter>
                 <Setter Property="Cursor" Value="Hand"></Setter>
+                <Setter Property="Background" Value="Transparent"></Setter>
             </Style.Setters>
             <Style.Triggers>
-                <DataTrigger Value="true" Binding="{Binding Path=OldValue, RelativeSource={RelativeSource Self}, Converter={StaticResource ResourceKey=ValueToEqualsParameterConverter}}">
-                    <Setter Property="Control.Background" Value="Red" />
+                <DataTrigger Value="False" Binding="{Binding Path=IsOLd}">
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)" To="LimeGreen" Duration="0:0:1" AutoReverse="True" />
+                                <!--<DoubleAnimation Duration="0:0:1" Storyboard.TargetProperty="Background" From="Transparent" To="Green" />-->
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.EnterActions>
+                    <!--<Setter Property="Control.Background" Value="Green" />-->
                 </DataTrigger>
+                <!--<DataTrigger Value="True" Binding="{Binding Path=IsOLd}">
+                    <Setter Property="Control.Background" Value="Transparent" />
+                </DataTrigger>-->
             </Style.Triggers>
         </Style>
         

@@ -8,10 +8,10 @@
         xmlns:system="clr-namespace:System;assembly=mscorlib"
         xmlns:controls="clr-namespace:Bets.Wpf.Controls"
         mc:Ignorable="d"
-        Title="Онлайн ставки" Height="350" Width="704.45"
+        Title="Онлайн ставки" Height="400.379" Width="695.192"
         Loaded="Fetch"
         DataContext="{Binding RelativeSource={RelativeSource Self}}" Icon="Resources/Humanoid.png">
-    
+
     <Window.Resources>
         <controls:ValueToEqualsParameterConverter x:Key="ValueToEqualsParameterConverter"></controls:ValueToEqualsParameterConverter>
     </Window.Resources>
@@ -89,23 +89,7 @@
                                                 <TextBlock Text="Винлайн" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" />
 
                                                 <Border Grid.Column="0" Grid.Row="1" DataContext="{Binding Fonbet.Total}">
-                                                    <Button Content="{Binding Path=Value}" HorizontalAlignment="Center">
-                                                        <Button.Style>
-                                                            <Style>
-                                                                <Style.Setters>
-                                                                    <Setter Property="Button.BorderBrush" Value="CornflowerBlue"></Setter>
-                                                                    <Setter Property="Button.Margin" Value="2"></Setter>
-                                                                    <Setter Property="Button.Width" Value="65"></Setter>
-                                                                    <Setter Property="Button.Cursor" Value="Hand"></Setter>
-                                                                </Style.Setters>
-                                                                <Style.Triggers>
-                                                                    <DataTrigger Value="true" Binding="{Binding Path=OldValue, RelativeSource={RelativeSource Self}, Converter={StaticResource ResourceKey=ValueToEqualsParameterConverter}}">
-                                                                        <Setter Property="Control.Background" Value="Red" />
-                                                                    </DataTrigger>
-                                                                </Style.Triggers>
-                                                            </Style>
-                                                        </Button.Style>
-                                                    </Button>
+                                                    <Button Content="{Binding Path=Value}" HorizontalAlignment="Center" Style="{StaticResource TextBlockBrushStyle}" />
                                                 </Border>
 
                                                 <Border Grid.Column="1" Grid.Row="1" DataContext="{Binding Winline.Total}">

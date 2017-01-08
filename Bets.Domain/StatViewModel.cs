@@ -29,57 +29,39 @@ namespace Bets.Domain
 
         public void Update()
         {
-            string currentTotal, currentHc;
-
             try
             {
                 if (string.IsNullOrEmpty(TotalWebElement.Text))
                 {
-                    currentTotal = @"-\-";
+                    Total.Value = @"-\-";
                 }
                 else
                 {
-                    currentTotal = TotalWebElement.Text;
+                    Total.Value = TotalWebElement.Text;
                 }
             }
             catch
             {
-                currentTotal = "-X-";
+                Total.Value = "-X-";
             }
-            if (!string.Equals(currentTotal, Total.Value, StringComparison.CurrentCultureIgnoreCase))
-            {
-                Total.Value = currentTotal;
-            }
-            //else if (!TotalColor.Equals(Brushes.Transparent))
-            //{
-            //    TotalColor = Brushes.Transparent;
-            //}
 
             try
             {
                 if (string.IsNullOrEmpty(HandicapWebElement.Text))
                 {
-                    currentHc = @"-\-";
+                    Handicap.Value = @"-\-";
                 }
                 else
                 {
-                    currentHc = HandicapWebElement
+                    Handicap.Value = HandicapWebElement
                         .Text.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries)[0];
                 }
             }
             catch
             {
-                currentHc = "-X-";
+                Handicap.Value = "-X-";
             }
-
-            if (!string.Equals(currentHc, Handicap.Value, StringComparison.CurrentCultureIgnoreCase))
-            {
-                Handicap.Value = currentHc;
-            }
-            //else if (!HandicapColor.Equals(Brushes.Transparent))
-            //{
-            //    HandicapColor = Brushes.Transparent;
-            //}
+            
 
         }
         

@@ -22,7 +22,10 @@ namespace Bets.Domain
         private bool _isOLd;
         public bool IsOLd
         {
-            get { return _isOLd; }
+            get
+            {
+                return _isOLd;
+            }
             set
             {
                 _isOLd = value;

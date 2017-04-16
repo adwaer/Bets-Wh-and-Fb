@@ -13,7 +13,7 @@ namespace Bets.Domain
         public IWebElement TotalWebElement { get; set; }
         public IWebElement HandicapWebElement { get; set; }
 
-        public ObservableObject<string> Total { get; set; }
+        public TotalObject Total { get; set; }
         public ObservableObject<string> Handicap { get; set; }
 
         public StatViewModel(IRow game)
@@ -21,7 +21,7 @@ namespace Bets.Domain
             TotalWebElement = game.TotalElement;
             HandicapWebElement = game.HandicapElement;
 
-            Total = new ObservableObject<string>();
+            Total = new TotalObject();
             Handicap = new ObservableObject<string>();
 
             Update();

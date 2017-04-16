@@ -5,6 +5,7 @@
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         <controls:ValueToEqualsParameterConverter x:Key="ValueToEqualsParameterConverter"></controls:ValueToEqualsParameterConverter>
+        <controls:ConverterCoefColor x:Key="ConverterCoefColor"></controls:ConverterCoefColor>
 
         <Style x:Key="TextBlockBrushStyle" TargetType="Button">
             <Style.Setters>
@@ -13,23 +14,28 @@
                 <Setter Property="Width" Value="65"></Setter>
                 <Setter Property="Cursor" Value="Hand"></Setter>
                 <Setter Property="Background" Value="Transparent"></Setter>
+                <!--<Setter Property="Background">
+                    <Setter.Value>
+                        <MultiBinding Converter="{StaticResource ConverterCoefColor}">
+                            <MultiBinding.Bindings>
+                                <Binding RelativeSource="{RelativeSource Self}"/>
+                                <Binding Path="Row" Mode="OneWay" />
+                            </MultiBinding.Bindings>
+                        </MultiBinding>
+                    </Setter.Value>
+                </Setter>-->
             </Style.Setters>
-            <Style.Triggers>
-                <DataTrigger Value="False" Binding="{Binding Path=IsOLd}">
+            <!--<Style.Triggers>
+                <DataTrigger Value="False" Binding="{Binding Path=IsOld}">
                     <DataTrigger.EnterActions>
                         <BeginStoryboard>
                             <Storyboard>
-                                <ColorAnimation Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)" To="LimeGreen" Duration="0:0:1" AutoReverse="True" />
-                                <!--<DoubleAnimation Duration="0:0:1" Storyboard.TargetProperty="Background" From="Transparent" To="Green" />-->
+                                <ColorAnimation Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)" To="LimeGreen" Duration="0:0:2" AutoReverse="True" />
                             </Storyboard>
                         </BeginStoryboard>
                     </DataTrigger.EnterActions>
-                    <!--<Setter Property="Control.Background" Value="Green" />-->
                 </DataTrigger>
-                <!--<DataTrigger Value="True" Binding="{Binding Path=IsOLd}">
-                    <Setter Property="Control.Background" Value="Transparent" />
-                </DataTrigger>-->
-            </Style.Triggers>
+            </Style.Triggers>-->
         </Style>
         
         <Style TargetType="Button">

@@ -72,13 +72,18 @@ namespace Bets.Selenium
 
                 var gameFb = gamesFb.Single();
 
-                results.Add(new ResultViewModel
+                var resultViewModel = new ResultViewModel
                 {
                     Team1 = gameFb.Team1,
                     Team2 = gameFb.Team2,
                     Fonbet = new StatViewModel(gameFb),
                     Winline = new StatViewModel(wlGame)
-                });
+                };
+
+                resultViewModel.Fonbet.Total.CompareObject = resultViewModel.Winline.Total;
+                resultViewModel.Winline.Total.CompareObject = resultViewModel.Fonbet.Total;
+
+                results.Add(resultViewModel);
             }
 
             return results;

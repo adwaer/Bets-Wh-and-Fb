@@ -13,7 +13,7 @@
         DataContext="{Binding RelativeSource={RelativeSource Self}}" Icon="Resources/Humanoid.png">
 
     <Window.Resources>
-        <controls:ValueToEqualsParameterConverter x:Key="ValueToEqualsParameterConverter"></controls:ValueToEqualsParameterConverter>
+        <controls:ConverterCoefColor x:Key="ConverterCoefColor"></controls:ConverterCoefColor>
     </Window.Resources>
 
     <Grid>
@@ -88,21 +88,53 @@
                                                 <TextBlock Text="Фонбет" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" />
                                                 <TextBlock Text="Винлайн" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" />
 
-                                                <Border Grid.Column="0" Grid.Row="1" DataContext="{Binding Fonbet.Total}">
-                                                    <Button Content="{Binding Path=Value}" HorizontalAlignment="Center" Style="{StaticResource TextBlockBrushStyle}" />
+                                                <Border Grid.Column="0" Grid.Row="1">
+                                                    <Border.Background>
+                                                        <MultiBinding Converter="{StaticResource ConverterCoefColor}" ConverterParameter="2">
+                                                            <MultiBinding.Bindings>
+                                                                <Binding Path="Fonbet.Total.Value" />
+                                                                <Binding Path="Winline.Total.Value" />
+                                                            </MultiBinding.Bindings>
+                                                        </MultiBinding>
+                                                    </Border.Background>
+                                                    <Button Content="{Binding Path=Fonbet.Total.Value}" HorizontalAlignment="Center" Style="{StaticResource TextBlockBrushStyle}" />
                                                 </Border>
 
-                                                <Border Grid.Column="1" Grid.Row="1" DataContext="{Binding Winline.Total}">
-                                                    <Button Content="{Binding Path=Value}" HorizontalAlignment="Center" Style="{StaticResource TextBlockBrushStyle}" />
+                                                <Border Grid.Column="1" Grid.Row="1">
+                                                    <Border.Background>
+                                                        <MultiBinding Converter="{StaticResource ConverterCoefColor}" ConverterParameter="2">
+                                                            <MultiBinding.Bindings>
+                                                                <Binding Path="Fonbet.Total.Value" />
+                                                                <Binding Path="Winline.Total.Value" />
+                                                            </MultiBinding.Bindings>
+                                                        </MultiBinding>
+                                                    </Border.Background>
+                                                    <Button Content="{Binding Path=Winline.Total.Value}" HorizontalAlignment="Center" Style="{StaticResource TextBlockBrushStyle}" />
                                                 </Border>
 
-                                                <Border Grid.Column="0" Grid.Row="2" DataContext="{Binding Fonbet.Handicap}">
-                                                    <Button Content="{Binding Path=Value}" HorizontalAlignment="Center" Style="{StaticResource TextBlockBrushStyle}" />
+                                                <Border Grid.Column="0" Grid.Row="2">
+                                                    <Border.Background>
+                                                        <MultiBinding Converter="{StaticResource ConverterCoefColor}" ConverterParameter="2">
+                                                            <MultiBinding.Bindings>
+                                                                <Binding Path="Winline.Handicap.Value" />
+                                                                <Binding Path="Fonbet.Handicap.Value" />
+                                                            </MultiBinding.Bindings>
+                                                        </MultiBinding>
+                                                    </Border.Background>
+                                                    <Button Content="{Binding Path=Fonbet.Handicap.Value}" HorizontalAlignment="Center" Style="{StaticResource TextBlockBrushStyle}" />
                                                 </Border>
 
                                                 <!--ContentControl Grid.Column="1" Grid.Row="2" Content="{Binding Winline.Handicap}">-->
-                                                <Border Grid.Column="1" Grid.Row="2" DataContext="{Binding Winline.Handicap}">
-                                                    <Button Content="{Binding Path=Value}" HorizontalAlignment="Center" Style="{StaticResource TextBlockBrushStyle}" />
+                                                <Border Grid.Column="1" Grid.Row="2">
+                                                    <Border.Background>
+                                                        <MultiBinding Converter="{StaticResource ConverterCoefColor}" ConverterParameter="2">
+                                                            <MultiBinding.Bindings>
+                                                                <Binding Path="Fonbet.Handicap.Value" />
+                                                                <Binding Path="Winline.Handicap.Value" />
+                                                            </MultiBinding.Bindings>
+                                                        </MultiBinding>
+                                                    </Border.Background>
+                                                    <Button Content="{Binding Path=Winline.Handicap.Value}" HorizontalAlignment="Center" Style="{StaticResource TextBlockBrushStyle}" />
                                                 </Border>
                                                 <!--</ContentControl>-->
                                             </Grid>

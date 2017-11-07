@@ -21,7 +21,7 @@ namespace Bets.Wpf
 
         public bool IsBusy { get; set; }
         public bool IsUpdating { get; set; }
-
+        
         public FormActions()
         {
             ResultViewModels = new ObservableCollection<ResultViewModel>();

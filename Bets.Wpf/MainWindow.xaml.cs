@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -83,6 +84,13 @@ namespace Bets.Wpf
 
             var resultViewModel = FormActions.ResultViewModels.First(r => Equals(r.Team1, teamViewModel));
             FormActions.UpdateHandicapWl(resultViewModel);
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            BetsNavigator.Instance.WinlinePage.Dispose();
+            BetsNavigator.Instance.FonbetPage.Dispose();
+            base.OnClosing(e);
         }
     }
 

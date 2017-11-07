@@ -3,9 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Bets.Wpf"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-        xmlns:system="clr-namespace:System;assembly=mscorlib"
         xmlns:controls="clr-namespace:Bets.Wpf.Controls"
         mc:Ignorable="d"
         Title="Онлайн ставки" Height="400.379" Width="695.192"
@@ -13,7 +11,9 @@
         DataContext="{Binding RelativeSource={RelativeSource Self}}" Icon="Resources/Humanoid.png">
 
     <Window.Resources>
-        <controls:ConverterCoefColor x:Key="ConverterCoefColor"></controls:ConverterCoefColor>
+        <controls:ConverterCoefColor x:Key="ConverterCoefColor" />
+        <BooleanToVisibilityConverter x:Key="BoolToVisConverter" />
+        <controls:BoolToColorBrushConverter x:Key="BoolToColorBrushConverter" />
     </Window.Resources>
 
     <Grid>
@@ -31,12 +31,14 @@
                 <xctk:BusyIndicator.BusyContentTemplate>
                     <DataTemplate>
                         <StackPanel Margin="4">
-                            <TextBlock Text="{Binding Path=FormActions.Seconds, StringFormat=Выполнение запроса: {0} сек, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" />
+                            <TextBlock
+                                Text="{Binding Path=FormActions.Seconds, StringFormat=Выполнение запроса: {0} сек, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" />
                         </StackPanel>
                     </DataTemplate>
                 </xctk:BusyIndicator.BusyContentTemplate>
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <ItemsControl Name="ResultsControl" ItemsSource="{Binding Path=FormActions.ResultViewModels}" Width="{Binding Path=ViewportWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ScrollViewer}}">
+                    <ItemsControl ItemsSource="{Binding Path=FormActions.ResultViewModels}"
+                                  Width="{Binding Path=ViewportWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ScrollViewer}}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <WrapPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" />
@@ -44,11 +46,14 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Border BorderBrush="CornflowerBlue" BorderThickness="1" Margin="5" MaxWidth="150" MinWidth="150" CornerRadius="5">
-                                    <StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Top" MaxWidth="150" MinWidth="150">
+                                <Border BorderBrush="CornflowerBlue" BorderThickness="1" Margin="5" MaxWidth="250"
+                                        MinWidth="150" CornerRadius="5">
+                                    <StackPanel Orientation="Vertical" HorizontalAlignment="Left"
+                                                VerticalAlignment="Top" MaxWidth="250" MinWidth="150">
                                         <StackPanel>
                                             <Border Height="20" VerticalAlignment="Top">
-                                                <TextBlock TextAlignment="Center" Background="CornflowerBlue" Padding="5,2" MaxWidth="150">
+                                                <TextBlock TextAlignment="Center" Background="CornflowerBlue"
+                                                           Padding="5,2" MaxWidth="250">
                                                     <TextBlock.Text>
                                                         <MultiBinding StringFormat="{}{0} vs {1}">
                                                             <Binding Path="Team1" />
@@ -56,7 +61,8 @@
                                                         </MultiBinding>
                                                     </TextBlock.Text>
                                                     <TextBlock.Foreground>
-                                                        <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.HighlightTextColorKey}}" />
+                                                        <SolidColorBrush
+                                                            Color="{DynamicResource {x:Static SystemColors.HighlightTextColorKey}}" />
                                                     </TextBlock.Foreground>
                                                     <TextBlock.ToolTip>
                                                         <ToolTip>
@@ -73,79 +79,91 @@
                                                 </TextBlock>
                                             </Border>
                                         </StackPanel>
-                                        <StackPanel>
+                                        <StackPanel Style="{StaticResource BetsPanel}">
                                             <Grid Margin="5,0,0,5">
                                                 <Grid.RowDefinitions>
-                                                    <RowDefinition MinHeight="20"></RowDefinition>
-                                                    <RowDefinition></RowDefinition>
-                                                    <RowDefinition></RowDefinition>
+                                                    <RowDefinition MinHeight="20" />
+                                                    <RowDefinition />
+                                                    <RowDefinition />
                                                 </Grid.RowDefinitions>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="5*"></ColumnDefinition>
-                                                    <ColumnDefinition Width="5*"></ColumnDefinition>
+                                                    <ColumnDefinition Width="5*" />
+                                                    <ColumnDefinition Width="5*" />
+                                                    <ColumnDefinition Width="5*" />
                                                 </Grid.ColumnDefinitions>
 
-                                                <TextBlock Text="Фонбет" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" />
-                                                <TextBlock Text="Винлайн" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" />
+                                                <TextBlock Text="Фон" Grid.Row="0" Grid.Column="0"
+                                                           HorizontalAlignment="Center" />
+                                                <TextBlock Text="Вин" Grid.Row="0" Grid.Column="1"
+                                                           HorizontalAlignment="Center" />
+                                                <TextBlock Text="Cтавка" Grid.Row="0" Grid.Column="2"
+                                                           HorizontalAlignment="Center" />
 
-                                                <Border Grid.Column="0" Grid.Row="1">
-                                                    <Border.Background>
-                                                        <MultiBinding Converter="{StaticResource ConverterCoefColor}" ConverterParameter="2">
-                                                            <MultiBinding.Bindings>
-                                                                <Binding Path="Fonbet.Total.Value" />
-                                                                <Binding Path="Winline.Total.Value" />
-                                                            </MultiBinding.Bindings>
-                                                        </MultiBinding>
-                                                    </Border.Background>
-                                                    <Button Content="{Binding Path=Fonbet.Total.Value}" HorizontalAlignment="Center" Style="{StaticResource TextBlockBrushStyle}" />
+                                                <Border Grid.Column="0" Grid.Row="1"
+                                                        Background="{Binding Path=IsGoodTotal.Value, Converter={StaticResource BoolToColorBrushConverter}, ConverterParameter=LimeGreen;Transperent;0.2;1, Mode=OneWay}">
+                                                    
+                                                    <Button Content="{Binding Path=Fonbet.Total.Value}"
+                                                            HorizontalAlignment="Center" />
                                                 </Border>
 
-                                                <Border Grid.Column="1" Grid.Row="1">
-                                                    <Border.Background>
-                                                        <MultiBinding Converter="{StaticResource ConverterCoefColor}" ConverterParameter="2">
-                                                            <MultiBinding.Bindings>
-                                                                <Binding Path="Fonbet.Total.Value" />
-                                                                <Binding Path="Winline.Total.Value" />
-                                                            </MultiBinding.Bindings>
-                                                        </MultiBinding>
-                                                    </Border.Background>
-                                                    <Button Content="{Binding Path=Winline.Total.Value}" HorizontalAlignment="Center" Style="{StaticResource TextBlockBrushStyle}" />
+                                                <Border Grid.Column="1" Grid.Row="1"
+                                                        Background="{Binding Path=IsGoodTotal.Value, Converter={StaticResource BoolToColorBrushConverter}, ConverterParameter=LimeGreen;Transperent;0.2;-1, Mode=OneWay}">
+                                                    <Button Content="{Binding Path=Winline.Total.Value}"
+                                                            HorizontalAlignment="Center" />
                                                 </Border>
 
-                                                <Border Grid.Column="0" Grid.Row="2">
-                                                    <Border.Background>
-                                                        <MultiBinding Converter="{StaticResource ConverterCoefColor}" ConverterParameter="2">
-                                                            <MultiBinding.Bindings>
-                                                                <Binding Path="Winline.Handicap.Value" />
-                                                                <Binding Path="Fonbet.Handicap.Value" />
-                                                            </MultiBinding.Bindings>
-                                                        </MultiBinding>
-                                                    </Border.Background>
-                                                    <Button Content="{Binding Path=Fonbet.Handicap.Value}" HorizontalAlignment="Center" Style="{StaticResource TextBlockBrushStyle}" />
+                                                <StackPanel Grid.Column="2" Grid.Row="1" Orientation="Horizontal">
+                                                    <Border
+                                                        Visibility="{ Binding Path=AutoBettingTotal, Converter={StaticResource BoolToVisConverter} }">
+                                                        <TextBox Text="{Binding Path=CefTotal}" />
+                                                    </Border>
+                                                    <Border
+                                                        Visibility="{ Binding Path=AutoBettingTotal, Converter={StaticResource BoolToVisConverter} }">
+                                                        <TextBox Text="{Binding Path=AmountTotal}" />
+                                                    </Border>
+                                                    <Border>
+                                                        <CheckBox IsChecked="{ Binding Path=AutoBettingTotal }" />
+                                                    </Border>
+                                                </StackPanel>
+
+                                                <Border Grid.Column="0" Grid.Row="2"
+                                                        Background="{Binding Path=IsGoodHc.Value, Converter={StaticResource BoolToColorBrushConverter}, ConverterParameter=LimeGreen;Transperent;0.2;1, Mode=OneWay}">
+                                                    <Button Content="{Binding Path=Fonbet.Handicap.Value}"
+                                                            HorizontalAlignment="Center" />
                                                 </Border>
 
-                                                <!--ContentControl Grid.Column="1" Grid.Row="2" Content="{Binding Winline.Handicap}">-->
-                                                <Border Grid.Column="1" Grid.Row="2">
-                                                    <Border.Background>
-                                                        <MultiBinding Converter="{StaticResource ConverterCoefColor}" ConverterParameter="2">
-                                                            <MultiBinding.Bindings>
-                                                                <Binding Path="Fonbet.Handicap.Value" />
-                                                                <Binding Path="Winline.Handicap.Value" />
-                                                            </MultiBinding.Bindings>
-                                                        </MultiBinding>
-                                                    </Border.Background>
-                                                    <Button Content="{Binding Path=Winline.Handicap.Value}" HorizontalAlignment="Center" Style="{StaticResource TextBlockBrushStyle}" />
+                                                <Border Grid.Column="1" Grid.Row="2"
+                                                        Background="{Binding Path=IsGoodHc.Value, Converter={StaticResource BoolToColorBrushConverter}, ConverterParameter=LimeGreen;Transperent;0.2;-1, Mode=OneWay}">
+                                                    <Button Content="{Binding Path=Winline.Handicap.Value}"
+                                                            HorizontalAlignment="Center" />
                                                 </Border>
-                                                <!--</ContentControl>-->
+
+                                                <StackPanel Grid.Column="2" Grid.Row="2" Orientation="Horizontal">
+                                                    <Border
+                                                        Visibility="{ Binding Path=AutoBettingHandicap, Converter={StaticResource BoolToVisConverter} }">
+                                                        <TextBox Text="{Binding Path=CefHandicap}" />
+                                                    </Border>
+                                                    <Border
+                                                        Visibility="{ Binding Path=AutoBettingHandicap, Converter={StaticResource BoolToVisConverter} }">
+                                                        <TextBox Text="{Binding Path=AmountHandicap}" />
+                                                    </Border>
+                                                    <Border>
+                                                        <CheckBox IsChecked="{ Binding Path=AutoBettingHandicap }" />
+                                                    </Border>
+                                                </StackPanel>
+
                                             </Grid>
                                         </StackPanel>
-                                        <StackPanel Orientation="Horizontal" Margin="5,0,0,0" IsManipulationEnabled="True">
-                                            <Button Background="Transparent" Width="25" Click="RemoveBtn_OnClick" Tag="{Binding Team1}">
+                                        <StackPanel Orientation="Horizontal" Margin="5,0,0,0"
+                                                    IsManipulationEnabled="True">
+                                            <Button Background="Transparent" Width="25" Click="RemoveBtn_OnClick"
+                                                    Tag="{Binding Team1}">
                                                 <StackPanel>
                                                     <Image Source="Resources/Delete.png" />
                                                 </StackPanel>
                                             </Button>
-                                            <Button Background="Transparent" Width="25" Click="UpdateBase_OnClick" Tag="{Binding Team1}">
+                                            <Button Background="Transparent" Width="25" Click="UpdateBase_OnClick"
+                                                    Tag="{Binding Team1}">
                                                 <StackPanel>
                                                     <Image Source="Resources/Refresh.png" />
                                                 </StackPanel>
@@ -156,6 +174,7 @@
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
+
                 </ScrollViewer>
             </xctk:BusyIndicator>
         </DockPanel>

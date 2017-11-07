@@ -54,7 +54,10 @@ namespace Bets.Domain
                 else
                 {
                     Handicap.Value = HandicapWebElement
-                        .Text.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries)[0];
+                        .Text.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries)[0]
+                        .Replace("−", "")
+                        .Replace("-", "")
+                        .Replace("+", "");
                 }
             }
             catch

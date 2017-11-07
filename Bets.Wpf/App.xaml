@@ -4,43 +4,35 @@
              xmlns:controls="clr-namespace:Bets.Wpf.Controls"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-        <controls:ValueToEqualsParameterConverter x:Key="ValueToEqualsParameterConverter"></controls:ValueToEqualsParameterConverter>
-        <controls:ConverterCoefColor x:Key="ConverterCoefColor"></controls:ConverterCoefColor>
+        <controls:ValueToEqualsParameterConverter x:Key="ValueToEqualsParameterConverter" />
+        <controls:ConverterCoefColor x:Key="ConverterCoefColor" />
 
-        <Style x:Key="TextBlockBrushStyle" TargetType="Button">
-            <Style.Setters>
-                <Setter Property="BorderBrush" Value="CornflowerBlue"></Setter>
-                <Setter Property="Margin" Value="2"></Setter>
-                <Setter Property="Width" Value="65"></Setter>
-                <Setter Property="Cursor" Value="Hand"></Setter>
-                <Setter Property="Background" Value="Transparent"></Setter>
-                <!--<Setter Property="Background">
-                    <Setter.Value>
-                        <MultiBinding Converter="{StaticResource ConverterCoefColor}">
-                            <MultiBinding.Bindings>
-                                <Binding RelativeSource="{RelativeSource Self}"/>
-                                <Binding Path="Row" Mode="OneWay" />
-                            </MultiBinding.Bindings>
-                        </MultiBinding>
-                    </Setter.Value>
-                </Setter>-->
-            </Style.Setters>
-            <!--<Style.Triggers>
-                <DataTrigger Value="False" Binding="{Binding Path=IsOld}">
-                    <DataTrigger.EnterActions>
-                        <BeginStoryboard>
-                            <Storyboard>
-                                <ColorAnimation Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)" To="LimeGreen" Duration="0:0:2" AutoReverse="True" />
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </DataTrigger.EnterActions>
-                </DataTrigger>
-            </Style.Triggers>-->
+        <Style x:Key="BetsPanel" TargetType="StackPanel">
+            <Style.Resources>
+                <Style TargetType="TextBox">
+                    <Setter Property="BorderBrush" Value="CornflowerBlue" />
+                    <Setter Property="BorderThickness" Value="0,0,0,1" />
+                    <Setter Property="Height" Value="21" />
+                    <Setter Property="MinWidth" Value="7"></Setter>
+                    <Setter Property="Margin" Value="1,0"></Setter>
+                </Style>
+                <Style TargetType="Button">
+                    <Setter Property="Margin" Value="2" />
+                    <Setter Property="Width" Value="65" />
+                    <Setter Property="Background" Value="Transparent" />
+                    <Setter Property="BorderBrush" Value="CornflowerBlue" />
+                    <Setter Property="BorderThickness" Value="0,0,0,1" />
+                </Style>
+                <Style TargetType="CheckBox">
+                    <Setter Property="Margin" Value="5" />
+                </Style>
+            </Style.Resources>
         </Style>
-        
+
+
         <Style TargetType="Button">
             <Style.Setters>
-                <Setter Property="Cursor" Value="Hand"></Setter>
+                <Setter Property="Cursor" Value="Hand" />
             </Style.Setters>
         </Style>
 

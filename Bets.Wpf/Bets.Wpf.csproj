@@ -95,6 +95,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Controls\AnimatedContentControl.cs" />
+    <Compile Include="Controls\BoolToColorBrushConverter.cs" />
     <Compile Include="Controls\ConverterCoefColor.cs" />
     <Compile Include="Controls\ValueToEqualsParameterConverter.cs" />
     <Compile Include="FormActions.cs" />

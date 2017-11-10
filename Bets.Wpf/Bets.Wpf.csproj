@@ -144,6 +144,10 @@
       <Project>{DCCC0FB9-7D95-4EDF-8A5C-E14E7E9B606D}</Project>
       <Name>Bets.Selenium</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Bets.Services\Bets.Services.csproj">
+      <Project>{6DE39481-FB22-4694-B272-C344A8826381}</Project>
+      <Name>Bets.Services</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Refresh.png" />

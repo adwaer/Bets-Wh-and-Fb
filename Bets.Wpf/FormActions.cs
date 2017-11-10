@@ -3,9 +3,10 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using Bets.Domain;
 using Bets.Selenium;
+using Bets.Services;
+using Xceed.Wpf.Toolkit;
 
 namespace Bets.Wpf
 {
@@ -13,6 +14,7 @@ namespace Bets.Wpf
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public ObservableCollection<ResultViewModel> ResultViewModels { get; set; }
+        public BetsService BetsService { get; set; }
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
@@ -21,9 +23,11 @@ namespace Bets.Wpf
 
         public bool IsBusy { get; set; }
         public bool IsUpdating { get; set; }
-        
+
         public FormActions()
         {
+            BetsService = new BetsService();
+
             ResultViewModels = new ObservableCollection<ResultViewModel>();
             System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
             dispatcherTimer.Tick += DispatcherTimer_Tick;
@@ -56,6 +60,14 @@ namespace Bets.Wpf
                 foreach (var resultViewModel in ResultViewModels)
                 {
                     resultViewModel.Update();
+                    if (resultViewModel.IsGoodTotal.Value != 0 && !resultViewModel.IsTotalPrev())
+                    {
+                        BetsService.Place(resultViewModel.Team1, resultViewModel.Team2, resultViewModel.IsGoodTotal.Value, resultViewModel.AmountTotal, "TOTAL");
+                    }
+                    if (resultViewModel.IsGoodHc.Value != 0 && !resultViewModel.IsHcPrev())
+                    {
+                        BetsService.Place(resultViewModel.Team1, resultViewModel.Team2, resultViewModel.IsGoodHc.Value, resultViewModel.AmountHandicap, "HC");
+                    }
                 }
                 IsUpdating = false;
             }

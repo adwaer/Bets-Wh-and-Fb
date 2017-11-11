@@ -38,8 +38,8 @@ namespace Bets.Services
             }
             if (model.IsGoodHc.Value != 0)
             {
-                var moreSide = model.IsGoodTotal.Value > 0 ? model.Team1 : model.Team2;
-                var lessSide = model.IsGoodTotal.Value > 0 ? model.Team2 : model.Team1;
+                var moreSide = model.IsGoodHc.Value > 0 ? model.Team1 : model.Team2;
+                var lessSide = model.IsGoodHc.Value > 0 ? model.Team2 : model.Team1;
 
                 var betModel = new BetModel(moreSide.ToString()
                     , lessSide.ToString()

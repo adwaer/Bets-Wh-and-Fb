@@ -60,14 +60,15 @@ namespace Bets.Wpf
                 foreach (var resultViewModel in ResultViewModels)
                 {
                     resultViewModel.Update();
-                    if (resultViewModel.IsGoodTotal.Value != 0 && !resultViewModel.IsTotalPrev())
-                    {
-                        BetsService.Place(resultViewModel.Team1, resultViewModel.Team2, resultViewModel.IsGoodTotal.Value, resultViewModel.AmountTotal, "TOTAL");
-                    }
-                    if (resultViewModel.IsGoodHc.Value != 0 && !resultViewModel.IsHcPrev())
-                    {
-                        BetsService.Place(resultViewModel.Team1, resultViewModel.Team2, resultViewModel.IsGoodHc.Value, resultViewModel.AmountHandicap, "HC");
-                    }
+                    BetsService.Place(resultViewModel);
+                    //if (resultViewModel.IsGoodTotal.Value != 0 && resultViewModel.IsTotalNotPrev())
+                    //{
+                    //    BetsService.Place(resultViewModel.Team1, resultViewModel.Team2, resultViewModel.IsGoodTotal.Value, resultViewModel.AmountTotal, "TOTAL", resultViewModel.Fonbet.Total.Value, resultViewModel.Winline.Total.Value);
+                    //}
+                    //if (resultViewModel.IsGoodHc.Value != 0 && resultViewModel.IsHcNotPrev())
+                    //{
+                    //    BetsService.Place(resultViewModel.Team1, resultViewModel.Team2, resultViewModel.IsGoodHc.Value, resultViewModel.AmountHandicap, "HC", resultViewModel.Fonbet.Handicap.Value, resultViewModel.Winline.Handicap.Value);
+                    //}
                 }
                 IsUpdating = false;
             }

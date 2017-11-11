@@ -33,14 +33,14 @@ namespace Bets.Domain
             FonbetPrev = Fonbet;
         }
 
-        public bool IsTotalPrev()
+        public bool IsTotalNotPrev()
         {
             return WinlinePrev == null
                 || FonbetPrev == null
                 || WinlinePrev.Total.Value != Winline.Total.Value
                 || FonbetPrev.Total.Value != Fonbet.Total.Value;
         }
-        public bool IsHcPrev()
+        public bool IsHcNotPrev()
         {
             return WinlinePrev == null
                    || FonbetPrev == null

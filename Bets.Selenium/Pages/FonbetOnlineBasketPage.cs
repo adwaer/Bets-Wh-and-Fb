@@ -13,21 +13,30 @@ namespace Bets.Selenium.Pages
     public sealed class FonbetOnlineBasketPage : BasketPage, IDisposable
     {
         public readonly IWebDriver WebDriver;
-        public readonly IJavaScriptExecutor Js;
-
         public FonbetOnlineBasketPage()
         {
             WebDriver = GetNewDriver(ConfigurationManager.AppSettings["fonbetDriver"]);
             Setup(WebDriver, ConfigurationManager.AppSettings["fonbetUrl"]);
-            Js = (IJavaScriptExecutor)WebDriver;
+            Auth(WebDriver);
         }
 
         public override IRow[] GetRows(StringBuilder errBuilder)
         {
-            var webElements = WebDriver.FindElement(By.Id("lineContainer"))
-                .FindElements(By.ClassName("trEvent"))
-                .Where(webElement => webElement.GetAttribute("style").Contains("display: table-row;"));
-
+            IEnumerable<IWebElement> webElements = null;
+            while (webElements == null)
+            {
+                try
+                {
+                    webElements = WebDriver.FindElement(By.Id("lineContainer"))
+                        .FindElements(By.ClassName("trEvent"))
+                        .Where(webElement => webElement.GetAttribute("style").Contains("display: table-row;"));
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
+            
             var fonbetRows = new List<FonbetRow>();
             Parallel.ForEach(webElements, webElement =>
             {
@@ -66,5 +75,23 @@ namespace Bets.Selenium.Pages
         {
             WebDriver.Dispose();
         }
+
+        #region private
+
+        private void Auth(IWebDriver webDriver)
+        {
+            var login = ConfigurationManager.AppSettings["fbLogin"];
+            var pwd = ConfigurationManager.AppSettings["fbPwd"];
+            
+            var loginElement = webDriver.FindElement(By.Id("editLogin"));
+            loginElement.SendKeys(login);
+
+            var pwdElement = webDriver.FindElement(By.Id("editPassword"));
+            pwdElement.SendKeys(pwd);
+
+            var submitBtn = webDriver.FindElement(By.Id("loginButtonLogin"));
+            submitBtn.Click();
+        }
+        #endregion
     }
 }

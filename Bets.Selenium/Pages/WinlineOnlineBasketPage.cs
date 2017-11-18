@@ -30,6 +30,7 @@ namespace Bets.Selenium.Pages
 
             Setup(WebDriver, ConfigurationManager.AppSettings["wlUrl"]);
             Setup(WebDriver1, ConfigurationManager.AppSettings["wlUrl"]);
+            Auth(WebDriver);
         }
 
         public override IRow[] GetRows(StringBuilder errBuilder)
@@ -44,7 +45,7 @@ namespace Bets.Selenium.Pages
                 {
                     winlineRow.HandicapElement = hcRow.First().HandicapElement;
                 }
-                else if(hcRow.Length > 1)
+                else if (hcRow.Length > 1)
                 {
                     errBuilder.AppendLine($"Дважды: {winlineRow.Team1} или {winlineRow.Team2}");
                 }
@@ -168,7 +169,7 @@ namespace Bets.Selenium.Pages
                 {
                     var teams = tableElement.FindElement(By.ClassName("statistic__team"))
                         .Text//.Replace("\r\n", string.Empty)
-                        .Split(new[] {" - ", " − ", " — ", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+                        .Split(new[] { " - ", " − ", " — ", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
 
                     results.Add(new WinlineRow
                     {
@@ -193,5 +194,23 @@ namespace Bets.Selenium.Pages
             WebDriver.Dispose();
             WebDriver1.Dispose();
         }
+
+        #region private
+
+        private void Auth(IWebDriver webDriver)
+        {
+            var login = ConfigurationManager.AppSettings["wlLogin"];
+            var pwd = ConfigurationManager.AppSettings["wlPwd"];
+            
+            var loginElement = webDriver.FindElement(By.CssSelector(".login__form input[type='text']"));
+            loginElement.SendKeys(login);
+
+            var pwdElement = webDriver.FindElement(By.CssSelector(".login__form input[type='password']"));
+            pwdElement.SendKeys(pwd);
+
+            var submitBtn = webDriver.FindElement(By.CssSelector(".login__form .login__btn"));
+            submitBtn.Click();
+        }
+        #endregion
     }
 }

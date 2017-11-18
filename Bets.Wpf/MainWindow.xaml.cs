@@ -88,8 +88,12 @@ namespace Bets.Wpf
 
         protected override void OnClosing(CancelEventArgs e)
         {
-            BetsNavigator.Instance.WinlinePage.Dispose();
-            BetsNavigator.Instance.FonbetPage.Dispose();
+            try
+            {
+                BetsNavigator.Instance.WinlinePage.Dispose();
+                BetsNavigator.Instance.FonbetPage.Dispose();
+            }
+            catch { }
             base.OnClosing(e);
         }
     }

@@ -9,26 +9,10 @@ namespace Bets.Domain
         private T _val;
         public T Value
         {
-            get { return _val; }
+            get => _val;
             set
             {
-
-                IsOLd = value.Equals(_val);
-
                 _val = value;
-                OnPropertyChanged();
-            }
-        }
-        private bool _isOLd;
-        public bool IsOLd
-        {
-            get
-            {
-                return _isOLd;
-            }
-            set
-            {
-                _isOLd = value;
                 OnPropertyChanged();
             }
         }

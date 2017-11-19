@@ -54,10 +54,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BetsNavigator.cs" />
+    <Compile Include="IBettingPage.cs" />
     <Compile Include="Pages\BasketPage.cs" />
     <Compile Include="Pages\WinlineOnlineBasketPage.cs" />
     <Compile Include="Pages\FonbetOnlineBasketPage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TeamsHolder.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -66,10 +68,6 @@
     <ProjectReference Include="..\Bets.Domain\Bets.Domain.csproj">
       <Project>{610D804C-8C70-44B9-995E-9A1C8777454D}</Project>
       <Name>Bets.Domain</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Bets.Services\Bets.Services.csproj">
-      <Project>{6de39481-fb22-4694-b272-c344a8826381}</Project>
-      <Name>Bets.Services</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

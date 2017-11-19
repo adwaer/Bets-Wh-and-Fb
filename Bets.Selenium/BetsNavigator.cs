@@ -16,14 +16,14 @@ namespace Bets.Selenium
         private static bool _inited;
         private static BetsNavigator _instance;
 
-        public static BetsNavigator Instance = LazyInitializer.EnsureInitialized(ref _instance, ref _inited, ref _sync,
+        public static readonly BetsNavigator Instance = LazyInitializer.EnsureInitialized(ref _instance, ref _inited, ref _sync,
             () => new BetsNavigator());
 
 
         private readonly FonbetOnlineBasketPage _fonbetOnlineBasketPage;
         private readonly WinlineOnlineBasketPage _winlineOnlineBasketPage;
 
-        public BetsNavigator()
+        private BetsNavigator()
         {
             _fonbetOnlineBasketPage = new FonbetOnlineBasketPage();
             _winlineOnlineBasketPage = new WinlineOnlineBasketPage();
@@ -87,6 +87,68 @@ namespace Bets.Selenium
             }
 
             return results;
+        }
+
+        public async Task<bool> PlaceTotal(ResultViewModel model)
+        {
+            return await Task.Run(async () =>
+            {
+                bool wlSet = false, fbSet = false;
+                var wlAmount = model.Winline.Total.Value;
+                var fbAmount = model.Fonbet.Total.Value;
+
+                if (model.IsGoodTotal.Value == -1)
+                {
+                    wlSet = await WinlinePage.SetTotal(model.Winline, model.AmountTotal, true);
+                    fbSet = await FonbetPage.SetTotal(model.Fonbet, model.AmountTotal, false);
+                }
+                else if (model.IsGoodTotal.Value == 1)
+                {
+                    wlSet = await WinlinePage.SetTotal(model.Winline, model.AmountTotal, false);
+                    fbSet = await FonbetPage.SetTotal(model.Fonbet, model.AmountTotal, true);
+                }
+
+                if (wlSet
+                    && fbSet
+                    && wlAmount == model.Winline.Total.Value
+                    && fbAmount == model.Fonbet.Total.Value)
+                {
+                    return true;
+                }
+                return false;
+            });
+        }
+
+        public async Task<bool> PlaceHc(ResultViewModel model)
+        {
+            return await Task.Run(async () =>
+            {
+                bool wlSet = false, fbSet = false;
+                var wlAmount = model.Winline.Handicap.Value;
+                var fbAmount = model.Fonbet.Handicap.Value;
+
+                if (model.IsGoodHc.Value == -1)
+                {
+                    wlSet = await WinlinePage.SetHc(model.Winline, model.AmountHandicap, true);
+                    fbSet = await FonbetPage.SetHc(model.Fonbet, model.AmountHandicap, false);
+                }
+                else if (model.IsGoodHc.Value == 1)
+                {
+                    wlSet = await WinlinePage.SetHc(model.Winline, model.AmountHandicap, false);
+                    fbSet = await FonbetPage.SetHc(model.Fonbet, model.AmountHandicap, true);
+                }
+
+                if (wlSet
+                    && fbSet
+                    && wlAmount == model.Winline.Handicap.Value
+                    && fbAmount == model.Fonbet.Handicap.Value)
+                {
+                    
+                    return true;
+                }
+                
+                return false;
+            });
         }
 
         private static void FillTeamsNames(IRow row, StringBuilder errorsBuilder)

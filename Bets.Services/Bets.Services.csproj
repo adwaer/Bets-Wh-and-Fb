@@ -51,12 +51,15 @@
     <Compile Include="BetsService.cs" />
     <Compile Include="IgnoreLeaguesHolder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TeamsHolder.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Bets.Domain\Bets.Domain.csproj">
       <Project>{610D804C-8C70-44B9-995E-9A1C8777454D}</Project>
       <Name>Bets.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Bets.Selenium\Bets.Selenium.csproj">
+      <Project>{DCCC0FB9-7D95-4EDF-8A5C-E14E7E9B606D}</Project>
+      <Name>Bets.Selenium</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

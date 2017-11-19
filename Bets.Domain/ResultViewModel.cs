@@ -17,35 +17,16 @@ namespace Bets.Domain
         public TeamViewModel Team2 { get; set; }
 
         public StatViewModel Winline { get; set; }
-        public StatViewModel WinlinePrev { get; set; }
         public StatViewModel Fonbet { get; set; }
-        public StatViewModel FonbetPrev { get; set; }
 
         public void Update()
         {
             Winline.Update();
             Fonbet.Update();
 
-            IsGoodTotal.Value = CalcIsGoodTotal();
-            IsGoodHc.Value = CalcIsGoodHc();
-
-            WinlinePrev = Winline;
-            FonbetPrev = Fonbet;
-        }
-
-        public bool IsTotalNotPrev()
-        {
-            return WinlinePrev == null
-                || FonbetPrev == null
-                || WinlinePrev.Total.Value != Winline.Total.Value
-                || FonbetPrev.Total.Value != Fonbet.Total.Value;
-        }
-        public bool IsHcNotPrev()
-        {
-            return WinlinePrev == null
-                   || FonbetPrev == null
-                   || WinlinePrev.Handicap.Value != Winline.Handicap.Value
-                   || FonbetPrev.Handicap.Value != Fonbet.Handicap.Value;
+            IsGoodTotal.Value = AutoBettingTotal ? CalcIsGoodTotal() : 0;
+            IsGoodHc.Value = AutoBettingHandicap ? CalcIsGoodHc() : 0;
+            
         }
 
         public ObservableObject<int> IsGoodTotal { get; } = new ObservableObject<int>();

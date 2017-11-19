@@ -3,10 +3,11 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
 using Bets.Domain;
 using Bets.Selenium;
 using Bets.Services;
-using Xceed.Wpf.Toolkit;
 
 namespace Bets.Wpf
 {
@@ -14,7 +15,7 @@ namespace Bets.Wpf
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public ObservableCollection<ResultViewModel> ResultViewModels { get; set; }
-        public BetsService BetsService { get; set; }
+        private BetsService BetsService { get; }
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
@@ -22,7 +23,6 @@ namespace Bets.Wpf
         }
 
         public bool IsBusy { get; set; }
-        public bool IsUpdating { get; set; }
 
         public FormActions()
         {
@@ -38,7 +38,7 @@ namespace Bets.Wpf
         private int _seconds;
         public int Seconds
         {
-            get { return _seconds; }
+            get => _seconds;
             set
             {
                 _seconds = value;
@@ -51,27 +51,40 @@ namespace Bets.Wpf
             Seconds = 0;
         }
 
+        private int _sync = 0;
         private void DispatcherTimer_Tick(object sender, EventArgs e)
         {
             Seconds++;
-            if (!IsBusy && !IsUpdating)
+            if (IsBusy)
             {
-                IsUpdating = true;
-                foreach (var resultViewModel in ResultViewModels)
-                {
-                    resultViewModel.Update();
-                    BetsService.Place(resultViewModel);
-                    //if (resultViewModel.IsGoodTotal.Value != 0 && resultViewModel.IsTotalNotPrev())
-                    //{
-                    //    BetsService.Place(resultViewModel.Team1, resultViewModel.Team2, resultViewModel.IsGoodTotal.Value, resultViewModel.AmountTotal, "TOTAL", resultViewModel.Fonbet.Total.Value, resultViewModel.Winline.Total.Value);
-                    //}
-                    //if (resultViewModel.IsGoodHc.Value != 0 && resultViewModel.IsHcNotPrev())
-                    //{
-                    //    BetsService.Place(resultViewModel.Team1, resultViewModel.Team2, resultViewModel.IsGoodHc.Value, resultViewModel.AmountHandicap, "HC", resultViewModel.Fonbet.Handicap.Value, resultViewModel.Winline.Handicap.Value);
-                    //}
-                }
-                IsUpdating = false;
+                return;
             }
+
+            if (_sync > 0)
+            {
+                return;
+            }
+            _sync++;
+            ThreadPool.QueueUserWorkItem(state =>
+            {
+                try
+                {
+                    foreach (var resultViewModel in ResultViewModels)
+                    {
+                        resultViewModel.Update();
+
+                        BetsService
+                            .Place(resultViewModel)
+                            .ConfigureAwait(false);
+                    }
+
+                }
+                finally
+                {
+                    _sync = 0;
+                    RestartTimer();
+                }
+            });
         }
 
         public void UpdateHandicapWl(ResultViewModel resultViewModel)
@@ -79,7 +92,7 @@ namespace Bets.Wpf
             var hadicapRow = BetsNavigator.Instance.WinlinePage.GetHadicapRow(
                 resultViewModel.Team1.Names.Union(resultViewModel.Team2.Names).ToArray());
 
-            resultViewModel.Winline.HandicapWebElement = hadicapRow;
+            resultViewModel.Winline.Game.HandicapElement = hadicapRow;
         }
     }
 }

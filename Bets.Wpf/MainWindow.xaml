@@ -27,12 +27,11 @@
                     </MenuItem>
                 </MenuItem>
             </Menu>
-            <xctk:BusyIndicator x:Name="BusyIndicator">
+            <xctk:BusyIndicator x:Name="BusyIndicator" DockPanel.Dock="Top">
                 <xctk:BusyIndicator.BusyContentTemplate>
                     <DataTemplate>
                         <StackPanel Margin="4">
-                            <TextBlock
-                                Text="{Binding Path=FormActions.Seconds, StringFormat=Выполнение запроса: {0} сек, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" />
+                            <TextBlock Text="{Binding Path=FormActions.Seconds, StringFormat=Выполнение запроса: {0} сек, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" />
                         </StackPanel>
                     </DataTemplate>
                 </xctk:BusyIndicator.BusyContentTemplate>
@@ -101,7 +100,7 @@
 
                                                 <Border Grid.Column="0" Grid.Row="1"
                                                         Background="{Binding Path=IsGoodTotal.Value, Converter={StaticResource BoolToColorBrushConverter}, ConverterParameter=LimeGreen;Transperent;0.2;1, Mode=OneWay}">
-                                                    
+
                                                     <Button Content="{Binding Path=Fonbet.Total.Value}"
                                                             HorizontalAlignment="Center" />
                                                 </Border>
@@ -177,6 +176,9 @@
 
                 </ScrollViewer>
             </xctk:BusyIndicator>
+            <StatusBar VerticalAlignment="Bottom">
+                <TextBlock Text="{Binding Path=FormActions.Seconds, StringFormat=Время обновления: {0} сек}" />
+            </StatusBar>
         </DockPanel>
     </Grid>
 </Window>

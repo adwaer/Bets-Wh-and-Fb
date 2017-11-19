@@ -6,7 +6,7 @@ using System.Threading;
 using Bets.Domain;
 using Newtonsoft.Json.Linq;
 
-namespace Bets.Services
+namespace Bets.Selenium
 {
     public class TeamsHolder
     {

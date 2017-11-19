@@ -10,17 +10,14 @@ namespace Bets.Domain
 {
     public class StatViewModel
     {
-        public IWebElement TotalWebElement { get; set; }
-        public IWebElement HandicapWebElement { get; set; }
+        public IRow Game { get; }
 
         public TotalObject Total { get; set; }
         public ObservableObject<string> Handicap { get; set; }
 
         public StatViewModel(IRow game)
         {
-            TotalWebElement = game.TotalElement;
-            HandicapWebElement = game.HandicapElement;
-
+            Game = game;
             Total = new TotalObject();
             Handicap = new ObservableObject<string>();
 
@@ -31,13 +28,13 @@ namespace Bets.Domain
         {
             try
             {
-                if (string.IsNullOrEmpty(TotalWebElement.Text))
+                if (string.IsNullOrEmpty(Game.TotalElement.Text))
                 {
                     Total.Value = @"-\-";
                 }
                 else
                 {
-                    Total.Value = TotalWebElement.Text;
+                    Total.Value = Game.TotalElement.Text;
                 }
             }
             catch
@@ -47,13 +44,13 @@ namespace Bets.Domain
 
             try
             {
-                if (string.IsNullOrEmpty(HandicapWebElement.Text))
+                if (string.IsNullOrEmpty(Game.HandicapElement.Text))
                 {
                     Handicap.Value = @"-\-";
                 }
                 else
                 {
-                    Handicap.Value = HandicapWebElement
+                    Handicap.Value = Game.HandicapElement
                         .Text.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries)[0]
                         .Replace("−", "")
                         .Replace("-", "")

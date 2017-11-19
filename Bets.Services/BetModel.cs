@@ -11,6 +11,13 @@
         public string Val2 { get; }
         public int Side { get; }
 
+        public BetModel(string moreSide, string lessSide, string category)
+        {
+            MoreSide = moreSide;
+            LessSide = lessSide;
+            Category = category;
+        }
+
         public BetModel(string moreSide, string lessSide, decimal amount, string category, string date, string val1, string val2, int side)
         {
             MoreSide = moreSide;

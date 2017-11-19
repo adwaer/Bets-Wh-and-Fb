@@ -1,17 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
+using System.Configuration;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using Bets.Domain;
+using Bets.Selenium;
 
 namespace Bets.Services
 {
     public class BetsService : IDisposable
     {
-        private Dictionary<BetModel, ResultViewModel> _dictionary = new Dictionary<BetModel, ResultViewModel>();
+        private readonly ConcurrentDictionary<BetModel, ResultViewModel> _dictionary = new ConcurrentDictionary<BetModel, ResultViewModel>();
         private readonly StreamWriter _writer;
+        private readonly string _autobetting;
         public BetsService()
         {
+            _autobetting = ConfigurationManager.AppSettings["autobetting"];
+
             _writer =
                 new StreamWriter($"bets_log.{DateTime.Now.ToShortDateString()}.csv", true, Encoding.UTF8)
                 {
@@ -19,57 +25,66 @@ namespace Bets.Services
                 };
         }
 
-        public void Place(ResultViewModel model)
+        public async Task Place(ResultViewModel model)
         {
-            if (model.IsGoodTotal.Value != 0)
+            if (model.AutoBettingTotal && model.IsGoodTotal.Value != 0)
             {
-                var moreSide = model.IsGoodTotal.Value > 0 ? model.Team1 : model.Team2;
-                var lessSide = model.IsGoodTotal.Value > 0 ? model.Team2 : model.Team1;
-                var betModel = new BetModel(moreSide.ToString()
-                    , lessSide.ToString()
-                    , model.AmountTotal
-                    , "TOTAL"
-                    , $"{DateTime.Now:dd.mm.yyyy HH:mm}"
-                    , model.Fonbet.Total.Value
-                    , model.Winline.Total.Value
-                    , model.IsGoodTotal.Value);
+                var betModel = new BetModel(model.Team1.ToString(), model.Team2.ToString(), "TOTAL");
+                //var moreSide = model.IsGoodTotal.Value > 0 ? model.Team1 : model.Team2;
+                //var lessSide = model.IsGoodTotal.Value > 0 ? model.Team2 : model.Team1;
+                //var betModel = new BetModel(moreSide.ToString()
+                //    , lessSide.ToString()
+                //    , model.AmountTotal
+                //    , "TOTAL"
+                //    , $"{DateTime.Now:dd.mm.yyyy HH:mm}"
+                //    , model.Fonbet.Total.Value
+                //    , model.Winline.Total.Value
+                //    , model.IsGoodTotal.Value);
 
-                AddBet(betModel, model);
+                await AddBet(betModel, model, true);
             }
-            if (model.IsGoodHc.Value != 0)
+            if (model.AutoBettingHandicap && model.IsGoodHc.Value != 0)
             {
-                var moreSide = model.IsGoodHc.Value > 0 ? model.Team1 : model.Team2;
-                var lessSide = model.IsGoodHc.Value > 0 ? model.Team2 : model.Team1;
+                var betModel = new BetModel(model.Team1.ToString(), model.Team2.ToString(), "HC");
 
-                var betModel = new BetModel(moreSide.ToString()
-                    , lessSide.ToString()
-                    , model.AmountHandicap
-                    , "Hc"
-                    , $"{DateTime.Now:dd.mm.yyyy HH:mm}"
-                    , model.Fonbet.Handicap.Value
-                    , model.Winline.Handicap.Value
-                    , model.IsGoodHc.Value);
+                //var moreSide = model.IsGoodHc.Value > 0 ? model.Team1 : model.Team2;
+                //var lessSide = model.IsGoodHc.Value > 0 ? model.Team2 : model.Team1;
 
-                AddBet(betModel, model);
+                //var betModel = new BetModel(moreSide.ToString()
+                //    , lessSide.ToString()
+                //    , model.AmountHandicap
+                //    , "Hc"
+                //    , $"{DateTime.Now:dd.mm.yyyy HH:mm}"
+                //    , model.Fonbet.Handicap.Value
+                //    , model.Winline.Handicap.Value
+                //    , model.IsGoodHc.Value);
+
+                await AddBet(betModel, model, false);
             }
 
         }
-        private void AddBet(BetModel betModel, ResultViewModel model)
+        private async Task AddBet(BetModel betModel, ResultViewModel model, bool total)
         {
             if (!_dictionary.ContainsKey(betModel))
             {
-                WriteFile($"{DateTime.Now.ToShortTimeString()};{betModel.Category};{betModel.MoreSide};{betModel.LessSide};{betModel.Amount};{betModel.Val1};{betModel.Val2}");
-                _dictionary.Add(betModel, model);
+                if (!_dictionary.TryAdd(betModel, model))
+                {
+                    return;
+                }
+
+                if (_autobetting.Equals("live"))
+                {
+                    bool placed = total
+                        ? await BetsNavigator.Instance.PlaceTotal(model)
+                        : await BetsNavigator.Instance.PlaceHc(model);
+                }
+                if (_autobetting.Equals("file"))
+                {
+                    WriteFile($"{DateTime.Now.ToShortTimeString()};{betModel.Category};{betModel.MoreSide};{betModel.LessSide};{betModel.Amount};{betModel.Val1};{betModel.Val2}");
+                }
             }
         }
 
-
-        public void Place(TeamViewModel team1, TeamViewModel team2, int side, decimal amount, string category, string val1, string val2)
-        {
-            var moreSide = side > 0 ? team1 : team2;
-            var lessSide = side > 0 ? team2 : team1;
-            WriteFile($"{DateTime.Now.ToShortTimeString()};{category};{moreSide};{lessSide};{amount};{val1};{val2}");
-        }
 
         private void WriteFile(string line)
         {

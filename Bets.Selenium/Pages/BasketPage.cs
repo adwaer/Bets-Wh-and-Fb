@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Drawing;
 using System.Text;
+using System.Threading.Tasks;
+using Bets.Domain;
 using Bets.Domain.PageElements;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
@@ -11,8 +12,10 @@ using OpenQA.Selenium.Support.UI;
 
 namespace Bets.Selenium.Pages
 {
-    public abstract class BasketPage
+    public abstract class BasketPage : IBettingPage
     {
+        protected IWebDriver WebDriver;
+
         protected virtual void Setup(IWebDriver webDriver, string url)
         {
             var navigation = webDriver
@@ -65,7 +68,68 @@ namespace Bets.Selenium.Pages
 
         public abstract IRow[] GetRows(StringBuilder errBuilder);
 
-        IWebElement _page = null;
+        #region IBettingPage
+
+        public Task<bool> SetTotal(StatViewModel model, decimal amount, bool more)
+        {
+            return Task.Run(() =>
+            {
+                lock (WebDriver)
+                {
+                    try
+                    {
+                        ClearBets();
+                        if (more)
+                        {
+                            model.Game.TotalMoreElement.Click();
+                        }
+                        else
+                        {
+                            model.Game.TotalLessElement.Click();
+                        }
+                    }
+                    catch
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            });
+        }
+
+        public Task<bool> SetHc(StatViewModel model, decimal amount, bool more)
+        {
+            return Task.Run(() =>
+            {
+                lock (WebDriver)
+                {
+                    try
+                    {
+                        ClearBets();
+                        if (more)
+                        {
+                            model.Game.HandicapMoreElement.Click();
+                        }
+                        else
+                        {
+                            model.Game.HandicapLessElement.Click();
+                        }
+                    }
+                    catch
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            });
+        }
+
+        protected abstract void ClearBets();
+        #endregion
+
+
+        readonly IWebElement _page = null;
         private void WaitForPageLoad(IWebDriver driver)
         {
             if (_page != null)
@@ -79,6 +143,6 @@ namespace Bets.Selenium.Pages
             waitForDocumentReady.Until(wdriver => js.ExecuteScript("return document.readyState").Equals("complete"));
             //js.ExecuteScript("document.body.style.zoom='70%'");
         }
-        
+
     }
 }

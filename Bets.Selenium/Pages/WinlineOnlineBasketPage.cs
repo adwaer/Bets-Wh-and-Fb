@@ -6,30 +6,29 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Bets.Domain;
 using Bets.Domain.PageElements;
-using Bets.Services;
 using OpenQA.Selenium;
 
 namespace Bets.Selenium.Pages
 {
     public sealed class WinlineOnlineBasketPage : BasketPage, IDisposable
     {
-        public readonly IWebDriver WebDriver;
-        public readonly IWebDriver WebDriver1;
-        public readonly IJavaScriptExecutor JsHc;
-        public readonly IJavaScriptExecutor JsFb;
+        private readonly IWebDriver _webDriver1;
+        private readonly IJavaScriptExecutor _jsHc;
+        private readonly IJavaScriptExecutor _jsFb;
         private bool _tabHcSwitched;
         private bool _tabTotalSwitched;
 
         public WinlineOnlineBasketPage()
         {
             WebDriver = GetNewDriver(ConfigurationManager.AppSettings["wlDriver"]);
-            WebDriver1 = GetNewDriver(ConfigurationManager.AppSettings["wlDriver"]);
-            JsHc = (IJavaScriptExecutor)WebDriver1;
-            JsFb = (IJavaScriptExecutor)WebDriver;
+            _webDriver1 = GetNewDriver(ConfigurationManager.AppSettings["wlDriver"]);
+            _jsHc = (IJavaScriptExecutor)_webDriver1;
+            _jsFb = (IJavaScriptExecutor)WebDriver;
 
             Setup(WebDriver, ConfigurationManager.AppSettings["wlUrl"]);
-            Setup(WebDriver1, ConfigurationManager.AppSettings["wlUrl"]);
+            Setup(_webDriver1, ConfigurationManager.AppSettings["wlUrl"]);
             Auth(WebDriver);
         }
 
@@ -63,10 +62,10 @@ namespace Bets.Selenium.Pages
                     try
                     {
                         Thread.Sleep(2000);
-                        JsHc.ExecuteScript(
+                        _jsHc.ExecuteScript(
                             "(function() { $('.sorting__item.sorting__item[title=\"Баскетбол\"]').click(); })()");
                         Thread.Sleep(2000);
-                        JsHc.ExecuteScript(
+                        _jsHc.ExecuteScript(
                             "(function() { document.getElementsByClassName('event-tabs__link')[1].click(); })()");
 
                         _tabHcSwitched = true;
@@ -86,7 +85,7 @@ namespace Bets.Selenium.Pages
                 {
                     try
                     {
-                        JsFb.ExecuteScript(
+                        _jsFb.ExecuteScript(
                             "(function() { $('.sorting__item.sorting__item[title=\"Баскетбол\"]').click(); })()");
 
                         _tabTotalSwitched = true;
@@ -98,44 +97,11 @@ namespace Bets.Selenium.Pages
                 }
             }
         }
-
-        public WinlineRow[] GetTotalRows(StringBuilder errBuilder)
-        {
-            SwitchBasketTab();
-
-            var results = new List<WinlineRow>();
-            ReadOnlyCollection<IWebElement> tableElements = WebDriver.FindElements(By.CssSelector(".events .table .table__item"));
-
-            Parallel.For(0, tableElements.Count, index =>
-            {
-                var tableElement = tableElements[index];
-                try
-                {
-                    var teams = tableElement.FindElement(By.ClassName("statistic__team"))
-                        .Text//.Replace("\r\n", string.Empty)
-                        .Split(new[] { " - ", " − ", " — ", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
-
-                    results.Add(new WinlineRow
-                    {
-                        Team1 = TeamsHolder.Instance.GetTeam(teams.First().Replace(" ", "")),
-                        Team2 = TeamsHolder.Instance.GetTeam(teams.Last().Replace(" ", "")),
-                        TotalElement = tableElement.FindElements(By.CssSelector(".coefficient .coefficient__cell"))[1].FindElements
-                            (By.CssSelector(".coefficient__td"))[1]
-                    });
-                }
-                catch (Exception ex)
-                {
-                    errBuilder.AppendLine(ex.Message);
-                }
-            });
-
-            return results.ToArray();
-        }
-
+        
         public IWebElement GetHadicapRow(string[] teamNames)
         {
             ReadOnlyCollection<IWebElement> tableElements =
-                WebDriver1.FindElements(By.CssSelector(".events .table .table__item"));
+                _webDriver1.FindElements(By.CssSelector(".events .table .table__item"));
 
             foreach (var tableElement in tableElements)
             {
@@ -153,14 +119,49 @@ namespace Bets.Selenium.Pages
 
             return null;
         }
-
-        public WinlineRow[] GetHadicapRows(StringBuilder errBuilder)
+        
+        public void Dispose()
         {
-            SwitchBasketHcTab();
+            WebDriver.Dispose();
+            _webDriver1.Dispose();
+        }
+
+        protected override void ClearBets()
+        {
+            var webElements = WebDriver.FindElements(By.ClassName("cross"));
+            foreach (var webElement in webElements)
+            {
+                webElement.Click();
+            }
+        }
+
+        #region private
+
+        private void Auth(IWebDriver webDriver)
+        {
+            var login = ConfigurationManager.AppSettings["wlLogin"];
+            var pwd = ConfigurationManager.AppSettings["wlPwd"];
+            if (string.IsNullOrEmpty(login) || string.IsNullOrEmpty(pwd))
+            {
+                return;
+            }
+
+            var loginElement = webDriver.FindElement(By.CssSelector(".login__form input[type='text']"));
+            loginElement.SendKeys(login);
+
+            var pwdElement = webDriver.FindElement(By.CssSelector(".login__form input[type='password']"));
+            pwdElement.SendKeys(pwd);
+
+            var submitBtn = webDriver.FindElement(By.CssSelector(".login__form .login__btn"));
+            submitBtn.Click();
+        }
+
+        private WinlineRow[] GetTotalRows(StringBuilder errBuilder)
+        {
+            SwitchBasketTab();
 
             var results = new List<WinlineRow>();
-            ReadOnlyCollection<IWebElement> tableElements =
-                WebDriver1.FindElements(By.CssSelector(".events .table .table__item"));
+            ReadOnlyCollection<IWebElement> tableElements = WebDriver.FindElements(By.CssSelector(".events .table .table__item"));
 
             Parallel.For(0, tableElements.Count, index =>
             {
@@ -171,13 +172,60 @@ namespace Bets.Selenium.Pages
                         .Text//.Replace("\r\n", string.Empty)
                         .Split(new[] { " - ", " − ", " — ", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
 
+                    var totals = tableElement.FindElements(By.CssSelector(".coefficient .coefficient__cell"))[1]
+                        .FindElements(By.CssSelector(".coefficient__td"));
                     results.Add(new WinlineRow
                     {
                         Team1 = TeamsHolder.Instance.GetTeam(teams.First().Replace(" ", "")),
                         Team2 = TeamsHolder.Instance.GetTeam(teams.Last().Replace(" ", "")),
-                        HandicapElement = tableElement
-                            .FindElements(By.CssSelector(".coefficient .coefficient__cell"))[1]
-                            .FindElements(By.CssSelector(".coefficient__td"))[1]
+                        TotalElement = totals[1],
+                        TotalLessElement = totals[0],
+                        TotalMoreElement = totals[2]
+                    });
+                }
+                catch (Exception ex)
+                {
+                    errBuilder.AppendLine(ex.Message);
+                }
+            });
+
+            return results.ToArray();
+        }
+        private WinlineRow[] GetHadicapRows(StringBuilder errBuilder)
+        {
+            SwitchBasketHcTab();
+
+            var results = new List<WinlineRow>();
+            ReadOnlyCollection<IWebElement> tableElements =
+                _webDriver1.FindElements(By.CssSelector(".events .table .table__item"));
+
+            Parallel.For(0, tableElements.Count, index =>
+            {
+                var tableElement = tableElements[index];
+                try
+                {
+                    var teams = tableElement.FindElement(By.ClassName("statistic__team"))
+                        .Text//.Replace("\r\n", string.Empty)
+                        .Split(new[] { " - ", " − ", " — ", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+
+                    var coefficients = tableElement.FindElements(By.ClassName("coefficient"));
+
+                    var handicapLess = coefficients[0]
+                        .FindElements(By.ClassName("coefficient__cell"))[0]
+                        .FindElements(By.ClassName("coefficient__td"))[0];
+                    var handicapMore = coefficients[1]
+                        .FindElements(By.ClassName("coefficient__cell"))[0]
+                        .FindElements(By.ClassName("coefficient__td"))[0];
+
+                    //coefficients[0].FindElements(By.ClassName("coefficient__cell"))[0].FindElements(By.CssSelector(".coefficient__td"))
+
+                    results.Add(new WinlineRow
+                    {
+                        Team1 = TeamsHolder.Instance.GetTeam(teams.First().Replace(" ", "")),
+                        Team2 = TeamsHolder.Instance.GetTeam(teams.Last().Replace(" ", "")),
+                        HandicapElement = handicapLess,
+                        HandicapLessElement = handicapLess,
+                        HandicapMoreElement = handicapMore
                     });
                 }
                 catch
@@ -189,28 +237,6 @@ namespace Bets.Selenium.Pages
             return results.ToArray();
         }
 
-        public void Dispose()
-        {
-            WebDriver.Dispose();
-            WebDriver1.Dispose();
-        }
-
-        #region private
-
-        private void Auth(IWebDriver webDriver)
-        {
-            var login = ConfigurationManager.AppSettings["wlLogin"];
-            var pwd = ConfigurationManager.AppSettings["wlPwd"];
-            
-            var loginElement = webDriver.FindElement(By.CssSelector(".login__form input[type='text']"));
-            loginElement.SendKeys(login);
-
-            var pwdElement = webDriver.FindElement(By.CssSelector(".login__form input[type='password']"));
-            pwdElement.SendKeys(pwd);
-
-            var submitBtn = webDriver.FindElement(By.CssSelector(".login__form .login__btn"));
-            submitBtn.Click();
-        }
         #endregion
     }
 }
